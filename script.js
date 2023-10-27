@@ -8,7 +8,7 @@ var que_no = 0;
 var tags = [];
 document.addEventListener("DOMContentLoaded", function () {
     getData();
-    loadPage("prac_que");
+    //loadPage("prac_que");
     setTimeout(function () {
         pageOpen();
         tabMenu();
