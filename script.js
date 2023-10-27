@@ -8,11 +8,85 @@ var que_no = 0;
 var tags = [];
 document.addEventListener("DOMContentLoaded", function () {
     getData();
-    setEventListners();
-
-    updateTags();
-    filter();
+    loadPage("prac_que");
+    setTimeout(function () {
+        pageOpen();
+        tabMenu();
+    }, 1000);
 });
+
+function pageOpen() {
+    qs("button#home").addEventListener("click", function () {
+        loadPage("prac_que");
+    });
+    qs("button#setting").addEventListener("click", function () {
+        loadPage("setting");
+    });
+
+    qs("button#about-me").addEventListener("click", function () {
+        loadPage("about");
+    });
+}
+
+function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log("Name: " + profile.getName());
+    console.log("Image URL: " + profile.getImageUrl());
+    console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
+}
+
+function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+        console.log("User signed out.");
+    });
+}
+
+function tabMenu() {
+    var menu_button = qs("#openMenu");
+    menu_button.addEventListener("click", function () {
+        qs("#tabOverlay").style.right = "0";
+        show("#tabOverlay");
+    });
+
+    document.querySelector("#closeMenu").addEventListener("click", function () {
+        closeTabOverlay();
+    });
+}
+
+function loadPracQueEventListners() {
+    setTimeout(function () {
+        setEventListners();
+        updateTags();
+        filter();
+    }, 1000);
+}
+
+function closeTabOverlay() {
+    qs("#tabOverlay").style.right = "-300px";
+    hide("#tabOverlay");
+}
+
+function loadPage(pageName) {
+    //debugger_;
+    const mainContent = document.getElementById("page-content");
+    mainContent.innerHTML = "";
+    var page_address = `${pageName}.html`;
+
+    fetch(page_address)
+        .then((response) => response.text())
+        .then((content) => {
+            mainContent.innerHTML = content;
+        })
+        .catch((error) => {
+            console.error(`Error loading content: ${error}`);
+        });
+    closeTabOverlay();
+    if (pageName == "prac_que") {
+        loadPracQueEventListners();
+    }
+}
 
 function filter() {
     qq.cards.forEach((card) => {
@@ -290,6 +364,9 @@ function openCard() {
     var list = qs(".per-que .que-list");
     list.innerHTML = "";
     if (card.questions.length != 0) loadCardQuestions();
+    setTimeout(function () {
+        textareaAutoHeightSetting();
+    }, 1000);
 }
 
 function loadCardQuestions() {

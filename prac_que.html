@@ -1,0 +1,97 @@
+<div class="page-content">
+    <div class="search-container">
+        <select id="difficultySelect" class="question-level que-level">
+            <option value="all" class="level all">all</option>
+            <option value="easy" class="level easy">easy</option>
+            <option value="medium" class="level medium">medium</option>
+            <option value="hard" class="level hard">hard</option>
+        </select>
+
+        <div class="search-categories categories cat">
+            <input type="text" id="search-input" placeholder="search" />
+            <div class="category hide">
+                <span class="category-name">biology</span>
+                <div class="clear-icon-cat" id="clear-icon">x</div>
+            </div>
+        </div>
+        <select id="que-type" class="que-type">
+            <option value="all" class="level all">all</option>
+            <option value="easy" class="level easy">normal</option>
+            <option value="medium" class="level medium">MCQ</option>
+        </select>
+    </div>
+    <div class="que-sec">
+        <span class="que"></span>
+        <div class="que-level">
+            <div class="level hard">hard</div>
+            <div class="level medium">medium</div>
+            <div class="level easy">easy</div>
+        </div>
+    </div>
+    <div class="center-btns">
+        <button id="create-new-card">Create a new card</button>
+        <button id="random" class="fas fa-random random"></button>
+    </div>
+    <br />
+    <div class="card main hide">
+        <div class="heading-sec hide">
+            <i class="fa-solid visibility caret icon fa-caret-down"></i>
+            <i class="fa-solid visibility caret icon fa-caret-right hide"></i>
+            <textarea class="heading"></textarea>
+        </div>
+        <div class="content card-content main-content">
+            <div class="text-content">
+                <span class="hide"></span>
+                <textarea class="" placeholder="Add come text"></textarea>
+            </div>
+            <button id="add-image">add image</button>
+            <div class="tag-sec card">
+                <div class="tag-label hide">
+                    <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
+                    <i class="fa-solid visibility caret icon fa-caret-right"></i>
+                </div>
+                <label class="hide">Card Tags:</label>
+                <div class="tags">
+                    <input type="text" class="hide" placeholder="new tag" />
+                    <div class="add-tag-icon fa-solid fa-plus"></div>
+                </div>
+            </div>
+
+            <div class="que-sec">
+                <div class="per-que">
+                    <div class="tag-label">
+                        <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
+                        <i class="fa-solid visibility caret icon fa-caret-right"></i>
+                        <label>Personal questions:</label>
+                        <button id="add-new-que">add new question</button>
+                    </div>
+                    <div class="main-content hide">
+                        <div class="que-list"></div>
+                    </div>
+                </div>
+                <div class="pub-que">
+                    <div class="tag-label">
+                        <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
+                        <i class="fa-solid visibility caret icon fa-caret-right"></i>
+                        <label>Public questions:</label>
+                    </div>
+                    <div class="que-list hide">
+                        <div class="que"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="all-tags-sec">
+        <div class="all-tag-head">
+            <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
+            <i class="fa-solid visibility caret icon fa-caret-right"></i>
+            <h2>All categories:</h2>
+            <div style="margin-left: auto">Sort by:</div>
+            <div class="az">A-Z</div>
+            <div class="09">0-9</div>
+        </div>
+        <div class="all-tags hide"></div>
+    </div>
+</div>

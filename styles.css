@@ -313,3 +313,43 @@ h2 {
     display: flex;
     flex-wrap: wrap;
 }
+
+
+
+/* setting page css */
+/* Setting page css*/
+.page.setting {
+    margin: 15px;
+    background-color: var(--center-bc);
+    border-radius: 7px;
+}
+
+
+
+.setting .item {
+    display: flex;
+    padding: 12px;
+
+}
+
+.setting .item h1 {
+    color: var(--header-bc);
+}
+
+.setting .item label {
+    color: var(--header-bc);
+}
+
+.setting .item input,
+.setting .item select {
+    border: none;
+    padding: 7px;
+    margin: 0px 10px;
+    border-radius: 5px;
+}
+
+.setting button#save {
+    border: 1px solid var(--header-bc);
+}
+
+/* end setting page css*/
