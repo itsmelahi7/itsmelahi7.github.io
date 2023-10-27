@@ -8,7 +8,7 @@ var que_no = 0;
 var tags = [];
 document.addEventListener("DOMContentLoaded", function () {
     getData();
-    //loadPage("prac_que");
+    loadPage("prac_que");
     setTimeout(function () {
         pageOpen();
         tabMenu();
@@ -28,57 +28,6 @@ function pageOpen() {
     });
 }
 
-function onSignIn(googleUser) { debugger;
-    console.log(' Sign in done');
-    var profile = googleUser.getBasicProfile();
-
-    console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    //console.log("Name: " + profile.getName());
-    //console.log("Image URL: " + profile.getImageUrl());
-    //console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
-}
-
-function signOut() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-        console.log("User signed out.");
-    });
-}
-
-function onLoadCallback() {
-    debugger;
-    gapi.client.load("plus", "v1", function () {
-        var request = gapi.client.plus.people.get({
-            userId: "me",
-        });
-
-        request.execute(function (response) {
-            console.log(response);
-            // Here, 'response' contains the user data
-        });
-    });
-}
-
-function onSuccess(googleUser) {
-    debugger;
-    console.log("Logged in as: " + googleUser.getBasicProfile().getName());
-}
-function onFailure(error) {
-    debugger;
-    console.log(error);
-}
-function renderButton() {
-    debugger;
-    gapi.signin2.render("my-signin2", {
-        scope: "profile email",
-        width: 240,
-        height: 50,
-        longtitle: true,
-        theme: "dark",
-        onsuccess: onSuccess,
-        onfailure: onFailure,
-    });
-}
 function tabMenu() {
     var menu_button = qs("#openMenu");
     menu_button.addEventListener("click", function () {
@@ -677,8 +626,8 @@ function qsa(ele) {
     return document.querySelectorAll(ele);
 }
 
-var card_template = `<div class="heading-sec hide">
-                        <i class="fa-solid visibility caret icon fa-caret-down"></i>
+var card_template = `<div class="heading-sec">
+                        <i class="fa-solid visibility caret icon fa-caret-down hide "></i>
                         <i class="fa-solid visibility caret icon fa-caret-right hide"></i>
                         <textarea class="heading"></textarea>
                     </div>
