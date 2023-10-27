@@ -44,6 +44,40 @@ function signOut() {
     });
 }
 
+function onLoadCallback() {
+    debugger;
+    gapi.client.load("plus", "v1", function () {
+        var request = gapi.client.plus.people.get({
+            userId: "me",
+        });
+
+        request.execute(function (response) {
+            console.log(response);
+            // Here, 'response' contains the user data
+        });
+    });
+}
+
+function onSuccess(googleUser) {
+    debugger;
+    console.log("Logged in as: " + googleUser.getBasicProfile().getName());
+}
+function onFailure(error) {
+    debugger;
+    console.log(error);
+}
+function renderButton() {
+    debugger;
+    gapi.signin2.render("my-signin2", {
+        scope: "profile email",
+        width: 240,
+        height: 50,
+        longtitle: true,
+        theme: "dark",
+        onsuccess: onSuccess,
+        onfailure: onFailure,
+    });
+}
 function tabMenu() {
     var menu_button = qs("#openMenu");
     menu_button.addEventListener("click", function () {
