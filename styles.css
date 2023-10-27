@@ -112,6 +112,7 @@ span.que {
 
 textarea {
     min-height: 30px !important;
+    width: 100%;
 }
 
 #add-image {
@@ -119,9 +120,14 @@ textarea {
     padding: 10px 0px 0px 2px;
 }
 
+.que-is-mcq {
+    display: flex;
+    margin: 7px;
+}
+
 .card .heading-sec {
     display: flex;
-    height: 40px;
+    min-height: 40px;
     margin-left: 7px;
 
 }

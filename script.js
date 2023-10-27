@@ -241,7 +241,8 @@ function createCard() {
     openCard();
 }
 
-function setEventListnersOnTagSection() {
+function setEventListnersOnTagSection() {}
+function setEventListnersOnTagSection2() {
     qsa(".add-tag-icon").forEach((icon) => {
         icon.addEventListener("click", function (event) {
             event.target.classList.toggle("hide");
@@ -499,10 +500,15 @@ function getNewQuestionTemplate() {
                                             <div class="tag-sec que">
                                                 <label class="hide"> Add tags </label>
                                                 <div class="tags">
-                                                    <input type="text" class="hide" placeholder="Add a tag" />
+                                                    <input type="text" class="hide add-tag-input" placeholder="Add a tag" />
                                                     <div class="add-tag-icon fa-solid fa-plus"></div>
                                                 </div>
-                                            </div>`;
+                                            </div>
+                                            <div class="que-is-mcq">
+<input type="checkbox" id="mcq" name="mcq" value="mcq">
+<label for="mcq">mcq</label>
+</div>
+                                            `;
 }
 
 function getID() {
@@ -521,6 +527,25 @@ function createElement(ele) {
     console.log(arguments.callee.name + " called");
     return document.createElement(ele);
 }
+
+function globalEventListner() {
+    document.addEventListener("click", (event) => {
+        if (event.target.matches("div.add-tag-icon")) {
+            setEventListnersOnTagSection2();
+            /*
+            event.target.classList.toggle("hide");
+            var input = event.target.previousElementSibling;
+            input.classList.toggle("hide");
+            input.focus();
+            input.addEventListener("blur", function (event) {
+                event.target.classList.toggle("hide");
+                event.target.nextElementSibling.classList.toggle("hide");
+            });
+            */
+        }
+    });
+}
+const document_event_listner = setInterval(globalEventListner, 1000);
 
 function getTodayDate() {
     console.log(arguments.callee.name + " called");
@@ -629,7 +654,7 @@ function qsa(ele) {
 var card_template = `<div class="heading-sec">
                         <i class="fa-solid visibility caret icon fa-caret-down hide "></i>
                         <i class="fa-solid visibility caret icon fa-caret-right hide"></i>
-                        <textarea class="heading"></textarea>
+                        <textarea class="heading" rows="1"></textarea>
                     </div>
                     <div class="card-content main-content">
                         <div class="content">
@@ -646,7 +671,7 @@ var card_template = `<div class="heading-sec">
                                 </div>
                                 <label class="hide">Card Tags:</label>
                                 <div class="tags">
-                                    <input type="text" class="hide" placeholder="new tag" />
+                                    <input type="text" class="hide add-tag-input" placeholder="new tag" />
                                     <div class="add-tag-icon fa-solid fa-plus"></div>
                                 </div>
                             </div>
