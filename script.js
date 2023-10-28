@@ -1,4 +1,60 @@
-//const { ipcRenderer } = require("electron");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+    apiKey: "AIzaSyCv2koOkHrqG_ioHoOU1vuDfI2KPwLNTZM",
+    authDomain: "revise-480317.firebaseapp.com",
+    projectId: "revise-480317",
+    storageBucket: "revise-480317.appspot.com",
+    messagingSenderId: "264373202075",
+    appId: "1:264373202075:web:faca853c3021e78db36a3e",
+    measurementId: "G-2VNZKXQP1Q",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+// Get a reference to the Firebase Storage
+const storage = getStorage(app);
+
+const addImageButton = document.getElementById("addImage");
+addImageButton.addEventListener("click", uploadImage);
+
+export function uploadImage() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const storageRef = ref(storage, `images/${file.name}`);
+            const uploadTask = uploadBytes(storageRef, file);
+
+            uploadTask
+                .then(() => {
+                    // Upload completed successfully, get the download URL
+                    getDownloadURL(storageRef)
+                        .then((downloadURL) => {
+                            console.log("Image uploaded. URL: " + downloadURL);
+                            image_url = downloadURL;
+                            return downloadURL;
+                        })
+                        .catch((error) => {
+                            console.error("Error getting download URL:", error);
+                        });
+                })
+                .catch((error) => {
+                    console.error("Error uploading image:", error);
+                });
+        }
+    };
+
+    input.click();
+}
 
 var qq = {
     cards: [],
@@ -8,6 +64,7 @@ var card = {};
 var fil_que = [];
 var que_no = 0;
 var tags = [];
+
 document.addEventListener("DOMContentLoaded", function () {
     getData();
     loadPage("prac_que");
@@ -24,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     */
 });
+var image_url = "";
 
 function pageOpen() {
     qs("button#home").addEventListener("click", function () {
@@ -84,12 +142,36 @@ function loadPage(pageName) {
 }
 
 function filter() {
+    fil_que = [];
+    var tags = qsa(".search-sec .tag-name");
     qq.cards.forEach((card) => {
         fil_que = fil_que.concat(card.questions);
     });
+    var temp_arr = [];
+    if (tags.length != 0) {
+        tags.forEach((tag) => {
+            tag = tag.textContent;
+
+            fil_que.forEach((que) => {
+                var card = getCardByID(que.card_id);
+                if (card.tags.includes(tag)) {
+                    temp_arr.push(que);
+                } else if (que.tags.includes(tag)) {
+                    temp_arr.push(que);
+                }
+            });
+            fil_que = temp_arr;
+            temp_arr = [];
+        });
+    }
+
     fil_que = sortArrayInRandomOrder(fil_que);
     que_no = 0;
-    showQuestion();
+    if (fil_que.length != 0) {
+        showQuestion();
+    } else {
+        showQuestion("No Question Found");
+    }
 }
 
 function sortArrayInRandomOrder(array) {
@@ -105,14 +187,20 @@ function nextQuestion() {
     }
 }
 
-function showQuestion() {
-    return;
+function showQuestion(text) {
     hide(".card.main");
+    show(".que-sec .que-level");
     //show(".que-sec");
+    if (text) {
+        qs(".que-sec span.que").textContent = text;
+        return;
+    }
     qs(".que-sec span.que").textContent = replaceTextWithMarkup(fil_que[que_no].text);
+
     qsa(".que-sec .level").forEach((level) => {
         level.addEventListener("click", function () {
             fil_que[que_no].level = level.textContent;
+            hide(".que-sec .que-level");
             saveData();
             card = getCardByID(fil_que[que_no].card_id);
             openCard();
@@ -132,6 +220,7 @@ function getCardByID(id) {
 
 function updateTags(event) {
     loadAllTags();
+
     setAllTags();
     if (event) {
         setAutoCompelete(event);
@@ -193,14 +282,20 @@ function setAllTags() {
     var all_tags = qs(".all-tags");
     tags.forEach((tag) => {
         var i = 0;
-        fil_que.forEach((que) => {
-            var card = getCardByID(que.card_id);
-            if (card.tags.includes(tag)) ++i;
-            else if (que.tags.includes(tag)) ++i;
+        qq.cards.forEach((card) => {
+            if (card.tags.includes(tag)) {
+                i = i + card.questions.length;
+            } else {
+                card.questions.forEach((que) => {
+                    if (que.tags.includes(tag)) {
+                        i = i + 1;
+                    }
+                });
+            }
         });
 
         var ttt = tag + " " + i;
-        var div = addNewTag(ttt, "", "text");
+        var div = addNewTag(ttt, "", "all tags");
         all_tags.append(div);
     });
 }
@@ -253,41 +348,13 @@ function setEventListners() {
         createQuestion(event);
     });
 
-    qs("#add-image").addEventListener("click", addImage);
-
     setContentSpanTextareaToggle();
     setEventListnersOnTagSection();
 
     setEventListnersOnQuestions();
 }
 
-function addImage() {
-    const imageUploadButton = document.getElementById("imageUploadButton");
-    const imageInput = document.getElementById("imageInput");
-
-    imageUploadButton.addEventListener("click", () => {
-        // Trigger the file input dialog when the button is clicked
-        imageInput.click();
-    });
-    //imageInput = document.getElementById("imageInput"); // Assuming 'imageInput' is the ID of your file input element
-
-    imageInput.addEventListener("change", (event) => {
-        const selectedImage = event.target.files[0];
-
-        if (selectedImage) {
-            const imageURL = URL.createObjectURL(selectedImage);
-            const imgElement = document.createElement("img");
-            imgElement.src = imageURL;
-            console.log(imageURL);
-
-            document.body.appendChild(imgElement);
-            console.log(imageURL);
-        }
-    });
-}
-
 function createCard() {
-    console.log(arguments.callee.name + "()");
     var new_card = {
         id: getID(),
         heading: "New card heading",
@@ -334,7 +401,6 @@ function setEventListnersOnTagSection2() {
 
 function openCard() {
     //
-    console.log(arguments.callee.name + "()");
 
     qs(".card.main").innerHTML = "";
     qs(".card.main").innerHTML = getTemplate("card");
@@ -444,32 +510,6 @@ function setContentSpanTextareaToggle() {
     });
 }
 
-function addImage() {
-    // Create an input element of type 'file'
-    const input = document.createElement("input");
-    input.type = "file";
-
-    // Set the accept attribute to specify that only image files can be selected
-    input.accept = "image/*";
-
-    // Add an event listener to handle file selection
-    input.addEventListener("change", function () {
-        const file = input.files[0]; // Get the selected file
-        if (file) {
-            const imageURL = URL.createObjectURL(file); // Create a URL for the selected file
-            //alert(`Selected Image URL: ${imageURL}`);
-            card.images.push(imageURL);
-            saveData();
-            var img = createElement("img");
-            img.src = imageURL;
-            qs(".card .image-list").append(img);
-        }
-    });
-
-    // Trigger a click event to open the file dialog
-    input.click();
-}
-
 function textareaAutoHeightSetting() {
     if (document.querySelectorAll("textarea")) {
         document.querySelectorAll("textarea").forEach((el) => {
@@ -486,7 +526,6 @@ function textareaAutoHeightSetting() {
 }
 
 function createQuestion(event) {
-    console.log(arguments.callee.name + " called");
     var new_question = {
         id: getID(),
         text: "",
@@ -536,7 +575,6 @@ function getTemplate(type) {
 }
 
 function getID() {
-    console.log(arguments.callee.name + " called");
     const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const idLength = 10;
     let id = "";
@@ -548,12 +586,35 @@ function getID() {
 }
 
 function createElement(ele) {
-    console.log(arguments.callee.name + " called");
     return document.createElement(ele);
+}
+var interval_save_image;
+async function getImageURL() {
+    uploadImage();
+    interval_save_image = setInterval(saveImage, 1000);
+}
+
+function saveImage() {
+    if (image_url != "") {
+        card.images.push(image_url);
+        saveData();
+        console.log("IMAGE URL IS ADDED");
+        let img = createElement("img");
+        img.src = image_url;
+        qs(".image-list").append(img);
+        console.log("IMAGE URL IS ADDED URL = " + image_url);
+        image_url = "";
+        debugger;
+        clearInterval(interval_save_image);
+    }
 }
 
 function globalEventListner() {
     document.addEventListener("click", (event) => {
+        if (event.target.matches("button#add-image")) {
+            getImageURL();
+        }
+
         if (event.target.matches("input.add-tag")) {
             setAutoCompelete(event);
             var input = event.target;
@@ -583,7 +644,6 @@ function globalEventListner() {
                     card.questions[i].answer = "a";
                 }
             }
-            debugger;
         }
         if (event.target.matches("select")) {
             if (event.target.classList.contains("mcq")) {
@@ -597,6 +657,11 @@ function globalEventListner() {
                     }
                 });
             }
+        }
+        if (event.target.matches("div.caret")) {
+            event.target.parentElement.children[0].classList.toggle("hide");
+            event.target.parentElement.children[1].classList.toggle("hide");
+            event.target.parentElement.nextElementSibling.classList.toggle("hide");
         }
     });
 }
@@ -614,9 +679,12 @@ function addNewTag(tag, event, from) {
     });
     div.children[1].addEventListener("click", function () {
         div.remove();
+        if (event.target.className.includes("search")) {
+            filter();
+        }
     });
     var is_duplicate = false;
-    debugger;
+
     if (from) {
         return div;
     } else {
@@ -625,6 +693,9 @@ function addNewTag(tag, event, from) {
     if (!is_duplicate) {
         event.target.parentElement.insertBefore(div, event.target);
     }
+    if (event.target.className.includes("search")) {
+        filter();
+    }
 }
 
 function addTagInDataArray(tag, event, div) {
@@ -632,17 +703,16 @@ function addTagInDataArray(tag, event, div) {
 
     var all_tags = par_ele.querySelectorAll(".tag");
     for (var i = 0; i < all_tags.length; i++) {
-        debugger;
         if (all_tags[i].children[0].textContent == tag) return true;
     }
     if (event.target.className.includes("search")) {
         div.children[1].classList.remove("hide");
-        //filter();
         return false;
     }
     if (par_ele.classList.contains("card")) {
         if (!card.tags.includes(tag)) {
             card.tags.push(tag);
+            saveData();
         }
     } else if (par_ele.classList.contains("que")) {
         var id = par_ele.parentElement.id;
@@ -654,13 +724,13 @@ function addTagInDataArray(tag, event, div) {
         });
         if (!card.questions[i].tags.includes(tag)) {
             card.questions[i].tags.push(tag);
+            saveData();
         }
     }
     return false;
 }
 
 function getTodayDate() {
-    console.log(arguments.callee.name + " called");
     const now = new Date();
 
     const year = now.getFullYear();
@@ -673,12 +743,9 @@ function getTodayDate() {
     return `${year}${month}${day}${hours}${minutes}${seconds}`;
 }
 
-function getCurrentcardID() {
-    console.log(arguments.callee.name + " called");
-}
+function getCurrentcardID() {}
 
 function getRevisiondate(num) {
-    console.log(arguments.callee.name + " called");
     const today = new Date(); // Get the current date
     today.setDate(today.getDate() + num); // Add 'num' days to the current date
 
@@ -690,8 +757,6 @@ function getRevisiondate(num) {
 }
 
 function replaceTextWithMarkup(text) {
-    console.log(arguments.callee.name + " called");
-
     text = text.replace(/\*\*(.*?)\*\*/g, '<span class="bold">$1</span>');
     text = text.replace(/\^\^(.*?)\^\^/g, '<span class="highlight">$1</span>');
     text = convertHeadings(text);
@@ -700,7 +765,6 @@ function replaceTextWithMarkup(text) {
     return text;
 }
 function convertHeadings(inputText) {
-    console.log(arguments.callee.name + " called");
     // Define a regular expression to match headings
     const regex = /^(#{1,3})\s+([^\n]*)\n/gm;
 
@@ -813,12 +877,3 @@ var card_template = `<div class="heading-sec">
                             </div>
                         </div>
                     </div>`;
-
-async function addFile() {
-    let [fileHandle] = await window.showOpenFilePicker();
-    var data = await fileHandle.getFile();
-    if (!data.type.includes("image")) {
-        alert("select an image file");
-        return;
-    }
-}

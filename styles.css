@@ -86,16 +86,16 @@ span.que {
 /* Card */
 .card.main {
     width: auto;
-    border: 3px solid #9090cd;
+    border: 3px solid #ddddef;
     border-radius: 5px;
     margin: 10px;
     padding: 0px;
-    /* background-color: var(--center-bc);*/
+    background-color: white;
 }
 
 .card.main .card-content {
-    background-color: #cfcfe8;
-    padding: 10px;
+    background-color: white;
+
 }
 
 .card-content .heading {
@@ -110,16 +110,30 @@ span.que {
     border-radius: 5px;
 }
 
+.sec {
+    padding: 10px;
+}
+
+.sort {
+    margin: 0px 6px;
+    color: blue;
+    cursor: pointer;
+}
+
 .que select {
     border: none;
     border-radius: 6px;
     background-color: inherit;
 }
 
+hr {
+    margin: 0px
+}
+
 .card .que-sec {
     margin: 0px;
-    background-color: #d1def2;
-    padding: 0px 10px;
+    background-color: white;
+
     border-radius: 0px 0px 5px 5px;
 }
 
