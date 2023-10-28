@@ -21,9 +21,6 @@ const analytics = getAnalytics(app);
 // Get a reference to the Firebase Storage
 const storage = getStorage(app);
 
-const addImageButton = document.getElementById("addImage");
-addImageButton.addEventListener("click", uploadImage);
-
 export function uploadImage() {
     const input = document.createElement("input");
     input.type = "file";
