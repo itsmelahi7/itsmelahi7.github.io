@@ -1,20 +1,16 @@
 <div class="page-content">
     <div class="search-container">
-        <select id="difficultySelect" class="question-level que-level">
+        <select id="difficultySelect" class="question-level hide que-level">
             <option value="all" class="level all">all</option>
             <option value="easy" class="level easy">easy</option>
             <option value="medium" class="level medium">medium</option>
             <option value="hard" class="level hard">hard</option>
         </select>
 
-        <div class="search-categories categories cat">
-            <input type="text" id="search-input" placeholder="search" />
-            <div class="category hide">
-                <span class="category-name">biology</span>
-                <div class="clear-icon-cat" id="clear-icon">x</div>
-            </div>
+        <div class="search-sec">
+            <input type="search" id="search-tag" class="search-tag add-tag" placeholder="filter questions" />
         </div>
-        <select id="que-type" class="que-type">
+        <select id="que-type" class="que-type hide">
             <option value="all" class="level all">all</option>
             <option value="easy" class="level easy">normal</option>
             <option value="medium" class="level medium">MCQ</option>
@@ -33,55 +29,7 @@
         <button id="random" class="fas fa-random random"></button>
     </div>
     <br />
-    <div class="card main hide">
-        <div class="heading-sec hide">
-            <i class="fa-solid visibility caret icon fa-caret-down"></i>
-            <i class="fa-solid visibility caret icon fa-caret-right hide"></i>
-            <textarea class="heading"></textarea>
-        </div>
-        <div class="content card-content main-content">
-            <div class="text-content">
-                <span class="hide"></span>
-                <textarea class="" placeholder="Add come text"></textarea>
-            </div>
-            <button id="add-image">add image</button>
-            <div class="tag-sec card">
-                <div class="tag-label hide">
-                    <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
-                    <i class="fa-solid visibility caret icon fa-caret-right"></i>
-                </div>
-                <label class="hide">Card Tags:</label>
-                <div class="tags">
-                    <input type="text" class="hide" placeholder="new tag" />
-                    <div class="add-tag-icon fa-solid fa-plus"></div>
-                </div>
-            </div>
-
-            <div class="que-sec">
-                <div class="per-que">
-                    <div class="tag-label">
-                        <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
-                        <i class="fa-solid visibility caret icon fa-caret-right"></i>
-                        <label>Personal questions:</label>
-                        <button id="add-new-que">add new question</button>
-                    </div>
-                    <div class="main-content hide">
-                        <div class="que-list"></div>
-                    </div>
-                </div>
-                <div class="pub-que">
-                    <div class="tag-label">
-                        <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
-                        <i class="fa-solid visibility caret icon fa-caret-right"></i>
-                        <label>Public questions:</label>
-                    </div>
-                    <div class="que-list hide">
-                        <div class="que"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="card main hide"></div>
 
     <div class="all-tags-sec">
         <div class="all-tag-head">
@@ -93,5 +41,67 @@
             <div class="09">0-9</div>
         </div>
         <div class="all-tags hide"></div>
+    </div>
+    <div class="templates hide">
+        <div class="card-template">
+            <div class="card-content">
+                <textarea class="heading" rows="1"></textarea>
+                <div class="text-content">
+                    <span class="hide"></span>
+                    <textarea class="" placeholder="Add some text"></textarea>
+                </div>
+
+                <div class="tag-sec card tags">
+                    <input type="text" class="add-tag" placeholder="+ tag" inputmode="text" />
+                </div>
+                <hr />
+                <div class="image-sec">
+                    <div class="head-sec">
+                        <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
+                        <i class="fa-solid visibility caret icon fa-caret-right"></i>
+                        <div class="head-text hide visibility">Show image</div>
+                        <div class="head-text hide visibility">Hide image</div>
+                        <div>Images</div>
+                        <button id="add-image" class="add-image add right">add image</button>
+                    </div>
+                    <div class="image-list main-content hide">
+                        <div>QUESTIONS</div>
+                    </div>
+                </div>
+            </div>
+            <div class="que-sec">
+                <div class="per-que">
+                    <div class="head-sec">
+                        <i class="fa-solid visibility caret icon fa-caret-down hide"></i>
+                        <i class="fa-solid visibility caret icon fa-caret-right"></i>
+                        <div class="head-text hide visibility">Show questions</div>
+                        <div class="head-text hide visibility">Hide questions</div>
+                        <div>Questions</div>
+                        <button id="add-new-que" class="add-new-que add right">add question</button>
+                    </div>
+                    <div class="main-content que-list hide">
+                        <div>QUESTIONS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-template que">
+            <textarea rows="1" placeholder="add question"></textarea>
+            <div class="que-is-mcq">
+                <label class="hide">Correct option: </label>
+                <select class="hide mcq">
+                    <option>a</option>
+                    <option>b</option>
+                    <option>c</option>
+                    <option>d</option>
+                </select>
+                <button id="add-mcq-template" class="add-mcq-template right">add mcq template</button>
+                <button id="delete" class="delete que">delete</button>
+            </div>
+            <div class="tag-sec que tags">
+                <input type="text" class="add-tag" placeholder="+ tag" inputmode="text" />
+            </div>
+        </div>
     </div>
 </div>

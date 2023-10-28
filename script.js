@@ -1,3 +1,5 @@
+//const { ipcRenderer } = require("electron");
+
 var qq = {
     cards: [],
     pages: [],
@@ -13,6 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
         pageOpen();
         tabMenu();
     }, 1000);
+
+    globalEventListner();
+    /*
+    const selectImageButton = document.getElementById("selectImage");
+    selectImageButton.addEventListener("click", function () {
+        ipcRenderer.send("select-and-copy-image");
+    });
+    */
 });
 
 function pageOpen() {
@@ -96,12 +106,12 @@ function nextQuestion() {
 }
 
 function showQuestion() {
+    return;
     hide(".card.main");
     //show(".que-sec");
     qs(".que-sec span.que").textContent = replaceTextWithMarkup(fil_que[que_no].text);
     qsa(".que-sec .level").forEach((level) => {
         level.addEventListener("click", function () {
-            debugger;
             fil_que[que_no].level = level.textContent;
             saveData();
             card = getCardByID(fil_que[que_no].card_id);
@@ -120,9 +130,63 @@ function getCardByID(id) {
     return null;
 }
 
-function updateTags() {
+function updateTags(event) {
     loadAllTags();
     setAllTags();
+    if (event) {
+        setAutoCompelete(event);
+    }
+}
+var autocompleteList = document.createElement("div");
+autocompleteList.className = "autocomplete-list";
+document.body.append(autocompleteList);
+autocompleteList.style.position = "absolute";
+
+function selectAutoCompeleteInput(input, event, location) {
+    if (!input) {
+        // qsa("input").forEach((input, e) => {});
+    } else {
+        // setAutoCompelete(input, e, location);
+    }
+}
+
+function setAutoCompelete(event) {
+    var input = event.target;
+    input.addEventListener("input", function () {
+        var inputValue = input.value.toLowerCase();
+        const matchingNames = tags.filter((name) => name.toLowerCase().includes(inputValue));
+
+        autocompleteList.innerHTML = "";
+        if (matchingNames.length === 0) {
+            autocompleteList.classList.remove("active");
+            return;
+        }
+
+        matchingNames.forEach((name) => {
+            const item = document.createElement("div");
+            item.textContent = name;
+
+            item.addEventListener("click", function () {
+                input.value = ""; //input.value = name;
+                addNewTag(name, event);
+                input.focus();
+                autocompleteList.classList.remove("active");
+            });
+            autocompleteList.appendChild(item);
+        });
+        autocompleteList.style.width = input.offsetWidth + "px";
+        autocompleteList.style.top = input.offsetTop + 25 + "px";
+        autocompleteList.style.left = input.offsetLeft + "px";
+        autocompleteList.classList.add("active");
+        autocompleteList.classList.remove("hide");
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!input.contains(event.target)) {
+            autocompleteList.classList.remove("active");
+            autocompleteList.classList.add("hide");
+        }
+    });
 }
 
 function setAllTags() {
@@ -134,7 +198,7 @@ function setAllTags() {
             if (card.tags.includes(tag)) ++i;
             else if (que.tags.includes(tag)) ++i;
         });
-        debugger;
+
         var ttt = tag + " " + i;
         var div = addNewTag(ttt, "", "text");
         all_tags.append(div);
@@ -178,7 +242,6 @@ function setEventListners() {
     if (ele) ele.addEventListener("click", createCard);
     qsa(".icon.caret").forEach((icon) => {
         icon.addEventListener("click", function (event) {
-            debugger;
             event.target.parentElement.children[0].classList.toggle("hide");
             event.target.parentElement.children[1].classList.toggle("hide");
             event.target.parentElement.nextElementSibling.classList.toggle("hide");
@@ -216,7 +279,7 @@ function addImage() {
             const imgElement = document.createElement("img");
             imgElement.src = imageURL;
             console.log(imageURL);
-            debugger;
+
             document.body.appendChild(imgElement);
             console.log(imageURL);
         }
@@ -224,13 +287,13 @@ function addImage() {
 }
 
 function createCard() {
-    debugger;
     console.log(arguments.callee.name + "()");
     var new_card = {
         id: getID(),
-        heading: "Heading",
+        heading: "New card heading",
         content: "",
         tags: [],
+        images: [],
         questions: [],
         create_date: getTodayDate(),
         update_date: getTodayDate(),
@@ -249,110 +312,77 @@ function setEventListnersOnTagSection2() {
             var input = event.target.previousElementSibling;
             input.classList.toggle("hide");
             input.focus();
-            debugger;
         });
         var input = icon.previousElementSibling;
         input.addEventListener("keydown", function (event) {
             if (event.key === "Enter") {
-                var tag = input.value.trim().toLowerCase();
+                if (event.target.className.includes("search")) {
+                    return;
+                }
                 addNewTag(tag, event);
                 input.value = "";
                 input.focus();
+                updateTags();
             }
         });
         input.addEventListener("blur", function (event) {
-            debugger;
             event.target.classList.toggle("hide");
             event.target.nextElementSibling.classList.toggle("hide");
         });
     });
 }
-function addNewTag(tag, e, from) {
-    if (tag.trim() == "") return;
-    var div = createElement("div");
-    div.className = "tag";
-    div.innerHTML = `<div class="tag-name">${tag}</div>
-                     <div class="tag-delete-icon hide">x</div>`;
-    div.addEventListener("click", function () {
-        div.children[1].classList.toggle("hide");
-    });
-    div.children[1].addEventListener("click", function () {
-        div.remove();
-    });
-    if (from) {
-        return div;
-    }
-
-    var cc = getNearestAncestorWithClass(e.target, "tag-sec");
-    if (cc.className.indexOf("card") != -1) {
-        if (!card.tags.includes(tag)) {
-            card.tags.push(tag);
-            saveData();
-        } else {
-            return;
-        }
-    } else {
-        var id = cc.parentElement.id;
-        var i;
-        card.questions.forEach((que, index) => {
-            if (que.id == id) {
-                i = index;
-            }
-        });
-        var abc = card.questions[i].tags;
-        if (!abc.includes(tag)) {
-            abc.push(tag);
-            saveData();
-        } else {
-            return;
-        }
-    }
-
-    e.target.parentElement.insertBefore(div, e.target);
-}
 
 function openCard() {
-    //debugger;
+    //
     console.log(arguments.callee.name + "()");
 
     qs(".card.main").innerHTML = "";
-    qs(".card.main").innerHTML = card_template;
+    qs(".card.main").innerHTML = getTemplate("card");
     show(".card.main");
-    setEventListners();
+    //setEventListners();
     //hide(".que-sec");
 
-    qs(".card .heading").value = card.heading;
-    qs(".card .content textarea").value = card.content;
-    qs(".card .content span").innerHTML = replaceTextWithMarkup(card.content);
-    qsa(".tag-sec.card .tags .tag").forEach((tag) => {
-        tag.remove();
-    });
-    var tags = qs(".tag-sec.card .tags");
-    var bfr = qs(" .tag-sec.card .tags input");
+    qs(".card-content .heading").value = card.heading;
+    qs(".card-content .text-content textarea").value = card.content;
+    qs(".card-content .text-content span").innerHTML = replaceTextWithMarkup(card.content);
+    if (card.content.trim() == "") {
+        hide(".card-content .text-content span");
+        show(".card-content .text-content textarea");
+        qs(".card-content .text-content textarea").focus();
+    } else {
+        show(".card-content .text-content span");
+        hide(".card-content .text-content textarea");
+    }
+
+    var tags_div = qs(".card-content .tags");
+    var tags_input_ele = qs(".card-content .tags input");
     card.tags.forEach((tag) => {
         if (tag != "") {
-            var dd = addNewTag(tag, "", "load card");
-            tags.insertBefore(dd, bfr);
+            var tag_div = addNewTag(tag, "", "load card");
+            tags_div.insertBefore(tag_div, tags_input_ele);
         }
     });
-    debugger;
-    if (card.content.trim() == "") {
-        hide(".text-content span");
-        show(".text-content textarea");
-        qs(".text-content textarea").focus();
-    } else {
-        show(".text-content span");
-        hide(".text-content textarea");
-    }
+
+    card.images.forEach((url) => {
+        var img = createElement("img");
+        img.src = url;
+        qs(".image-list").append(img);
+    });
+
+    var que_list = qs(".per-que .que-list");
+    que_list.innerHTML = "";
+
+    if (card.questions.length != 0) loadCardQuestions();
+    setTimeout(function () {
+        triggerEventListners();
+    }, 1000);
+}
+
+function triggerEventListners() {
+    setEventListners();
     textareaAutoHeightSetting();
     setEventListnersOnQuestions();
     setEventListnersOnTagSection();
-    var list = qs(".per-que .que-list");
-    list.innerHTML = "";
-    if (card.questions.length != 0) loadCardQuestions();
-    setTimeout(function () {
-        textareaAutoHeightSetting();
-    }, 1000);
 }
 
 function loadCardQuestions() {
@@ -362,7 +392,7 @@ function loadCardQuestions() {
         var div = createElement("div");
         div.className = "que";
         div.id = que.id;
-        div.innerHTML = getNewQuestionTemplate();
+        div.innerHTML = getTemplate("que");
         div.children[0].value = que.text;
         var bfr = div.querySelector(".tags input");
         var tags = div.querySelector(".tags");
@@ -393,8 +423,8 @@ function createPage() {
 }
 
 function setContentSpanTextareaToggle() {
-    var textarea = document.querySelector(".card .content textarea");
-    var span = document.querySelector(".card .content span");
+    var textarea = document.querySelector(".text-content textarea");
+    var span = document.querySelector(".text-content span");
 
     textarea.addEventListener("input", function () {
         card.content = textarea.value;
@@ -407,7 +437,6 @@ function setContentSpanTextareaToggle() {
         textarea.classList.toggle("hide");
     });
     span.addEventListener("click", function () {
-        debugger;
         span.classList.toggle("hide");
         textarea.classList.toggle("hide");
         textarea.focus();
@@ -428,7 +457,12 @@ function addImage() {
         const file = input.files[0]; // Get the selected file
         if (file) {
             const imageURL = URL.createObjectURL(file); // Create a URL for the selected file
-            alert(`Selected Image URL: ${imageURL}`);
+            //alert(`Selected Image URL: ${imageURL}`);
+            card.images.push(imageURL);
+            saveData();
+            var img = createElement("img");
+            img.src = imageURL;
+            qs(".card .image-list").append(img);
         }
     });
 
@@ -451,12 +485,13 @@ function textareaAutoHeightSetting() {
     }
 }
 
-function createQuestion(e) {
-    debugger;
+function createQuestion(event) {
     console.log(arguments.callee.name + " called");
     var new_question = {
         id: getID(),
         text: "",
+        type: "",
+        answer: "",
         card_id: card.id,
         tags: [],
         level: "hard",
@@ -468,12 +503,12 @@ function createQuestion(e) {
     //card.questions.push(new_question);
     saveData();
 
-    var per_que = getNearestAncestorWithClass(e.target, "per-que");
+    var per_que = getNearestAncestorWithClass(event.target, "per-que");
     var list = per_que.querySelector(".que-list");
     var div = createElement("div");
     div.className = "que";
     div.id = new_question.id;
-    div.innerHTML = getNewQuestionTemplate();
+    div.innerHTML = getTemplate("que");
     var first_child = list.firstElementChild;
     list.insertBefore(div, first_child);
     var abc = per_que.querySelector(".fa-caret-down.hide");
@@ -495,20 +530,9 @@ function getNearestAncestorWithClass(element, className) {
     return null; // No ancestor with the class found
 }
 
-function getNewQuestionTemplate() {
-    return `<textarea rows="1" placeholder="add question"></textarea>
-                                            <div class="tag-sec que">
-                                                <label class="hide"> Add tags </label>
-                                                <div class="tags">
-                                                    <input type="text" class="hide add-tag-input" placeholder="Add a tag" />
-                                                    <div class="add-tag-icon fa-solid fa-plus"></div>
-                                                </div>
-                                            </div>
-                                            <div class="que-is-mcq">
-<input type="checkbox" id="mcq" name="mcq" value="mcq">
-<label for="mcq">mcq</label>
-</div>
-                                            `;
+function getTemplate(type) {
+    if (type == "que") return qs(".question-template").innerHTML;
+    if (type == "card") return qs(".card-template").innerHTML;
 }
 
 function getID() {
@@ -530,22 +554,110 @@ function createElement(ele) {
 
 function globalEventListner() {
     document.addEventListener("click", (event) => {
-        if (event.target.matches("div.add-tag-icon")) {
-            setEventListnersOnTagSection2();
-            /*
-            event.target.classList.toggle("hide");
-            var input = event.target.previousElementSibling;
-            input.classList.toggle("hide");
-            input.focus();
-            input.addEventListener("blur", function (event) {
-                event.target.classList.toggle("hide");
-                event.target.nextElementSibling.classList.toggle("hide");
+        if (event.target.matches("input.add-tag")) {
+            setAutoCompelete(event);
+            var input = event.target;
+            input.addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    if (event.target.className.includes("search")) {
+                        return;
+                    }
+                    var tag = input.value.trim().toLowerCase();
+                    addNewTag(tag, event);
+                    input.value = "";
+                    input.focus();
+                    updateTags(event);
+                }
             });
-            */
+        }
+        if (event.target.matches("button.add-mcq-template")) {
+            event.target.classList.add("hide");
+            event.target.previousElementSibling.classList.remove("hide");
+            event.target.previousElementSibling.previousElementSibling.classList.remove("hide");
+            event.target.parentElement.previousElementSibling.value = "Question...\n(a)\n(b)\n(c)\n(d)";
+            textareaAutoHeightSetting();
+            var id = event.target.parentElement.parentElement.id;
+            for (var i = 0; i < card.questions.length; i++) {
+                if (card.questions[i].id == id) {
+                    card.questions[i].type = "mcq";
+                    card.questions[i].answer = "a";
+                }
+            }
+            debugger;
+        }
+        if (event.target.matches("select")) {
+            if (event.target.classList.contains("mcq")) {
+                event.target.addEventListener("change", (event) => {
+                    var id = getNearestAncestorWithClass(event.target, "que").id;
+                    for (var i = 0; i < card.questions.length; i++) {
+                        if (card.questions[i].id == id) {
+                            card.questions[i].answer = event.target.value;
+                            break;
+                        }
+                    }
+                });
+            }
         }
     });
 }
-const document_event_listner = setInterval(globalEventListner, 1000);
+//const document_event_listner = setInterval(globalEventListner, 1000);
+
+function addNewTag(tag, event, from) {
+    if (tag.trim() == "") return;
+
+    var div = createElement("div");
+    div.className = "tag";
+    div.innerHTML = `<div class="tag-name">${tag}</div>
+                     <div class="tag-delete-icon hide">x</div>`;
+    div.addEventListener("click", function () {
+        div.children[1].classList.toggle("hide");
+    });
+    div.children[1].addEventListener("click", function () {
+        div.remove();
+    });
+    var is_duplicate = false;
+    debugger;
+    if (from) {
+        return div;
+    } else {
+        is_duplicate = addTagInDataArray(tag, event, div);
+    }
+    if (!is_duplicate) {
+        event.target.parentElement.insertBefore(div, event.target);
+    }
+}
+
+function addTagInDataArray(tag, event, div) {
+    var par_ele = event.target.parentElement;
+
+    var all_tags = par_ele.querySelectorAll(".tag");
+    for (var i = 0; i < all_tags.length; i++) {
+        debugger;
+        if (all_tags[i].children[0].textContent == tag) return true;
+    }
+    if (event.target.className.includes("search")) {
+        div.children[1].classList.remove("hide");
+        //filter();
+        return false;
+    }
+    if (par_ele.classList.contains("card")) {
+        if (!card.tags.includes(tag)) {
+            card.tags.push(tag);
+        }
+    } else if (par_ele.classList.contains("que")) {
+        var id = par_ele.parentElement.id;
+        var i;
+        card.questions.forEach((que, index) => {
+            if (que.id == id) {
+                i = index;
+            }
+        });
+        if (!card.questions[i].tags.includes(tag)) {
+            card.questions[i].tags.push(tag);
+        }
+    }
+    return false;
+}
 
 function getTodayDate() {
     console.log(arguments.callee.name + " called");
@@ -662,7 +774,14 @@ var card_template = `<div class="heading-sec">
                                 <span class="hide"></span>
                                 <textarea class="" placeholder="Add some text"></textarea>
                             </div>
-                            
+                            <div class="image-sec">
+                                <div class="head-sec">
+                                    <div class="head-text">Show image</div>
+                                    <div class="head-text hide">Hide image</div>
+                                    <button id="add-image">add image</button>
+                                </div>
+                                <div class="image-list main-content"></div>
+                            </div>
                             <button id="add-image">add image</button>    
                             <div class="tag-sec card">
                                 <div class="tag-label hide">
@@ -671,7 +790,7 @@ var card_template = `<div class="heading-sec">
                                 </div>
                                 <label class="hide">Card Tags:</label>
                                 <div class="tags">
-                                    <input type="text" class="hide add-tag-input" placeholder="new tag" />
+                                    <input type="text" class="hide add-tag-input" placeholder="+ tag  " />
                                     <div class="add-tag-icon fa-solid fa-plus"></div>
                                 </div>
                             </div>
@@ -694,3 +813,12 @@ var card_template = `<div class="heading-sec">
                             </div>
                         </div>
                     </div>`;
+
+async function addFile() {
+    let [fileHandle] = await window.showOpenFilePicker();
+    var data = await fileHandle.getFile();
+    if (!data.type.includes("image")) {
+        alert("select an image file");
+        return;
+    }
+}

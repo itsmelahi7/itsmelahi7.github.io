@@ -882,12 +882,20 @@ body>.content>header .menu-button {
 }
 
 /* Style for the overlay */
+body>.content {
+    position: relative;
+    background-color: var(--page-bc);
+    height: 100vh;
+}
+
+
 .mobile-tab.overlay {
+    position: absolute;
     display: block;
-    position: fixed;
+
     top: 0;
     right: -300px;
-    width: 70vw;
+    width: 60%;
     height: 100%;
     background-color: var(--menu-overlay-bc);
     z-index: 1000;
