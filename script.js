@@ -1,4 +1,3 @@
-/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -22,9 +21,7 @@ const analytics = getAnalytics(app);
 // Get a reference to the Firebase Storage
 const storage = getStorage(app);
 
-export 
-*/
-function uploadImage() {
+export function uploadImage() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
