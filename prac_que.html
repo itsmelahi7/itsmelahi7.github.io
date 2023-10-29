@@ -60,12 +60,10 @@
                     <div class="head-sec">
                         <div class="fa-solid fa-caret-right caret"></div>
                         <div class="fa-solid fa-caret-down caret hide"></div>
-                        <div class="head-text">Images</div>
+                        <div class="head-text">Images(0)</div>
                         <button id="add-image" class="add-image add right">add image</button>
                     </div>
-                    <div class="image-list main-content hide">
-                        <div>QUESTIONS</div>
-                    </div>
+                    <div class="image-list main-content hide"></div>
                 </div>
             </div>
             <hr />
@@ -74,19 +72,17 @@
                     <div class="head-sec">
                         <div class="fa-solid fa-caret-right caret"></div>
                         <div class="fa-solid fa-caret-down caret hide"></div>
-                        <div class="head-text">Questions</div>
+                        <div class="head-text">Questions (0)</div>
                         <button id="add-new-que" class="add-new-que add right">add question</button>
                     </div>
-                    <div class="main-content que-list hide">
-                        <div>QUESTIONS</div>
-                    </div>
+                    <div class="main-content que-list hide"></div>
                 </div>
             </div>
         </div>
 
         <div class="question-template que">
             <textarea rows="1" placeholder="add question"></textarea>
-            <div class="que-is-mcq">
+            <div class="que-is-mcq hide">
                 <label class="hide">Correct option: </label>
                 <select class="hide mcq">
                     <option>a</option>
@@ -99,6 +95,7 @@
             </div>
             <div class="tag-sec que tags">
                 <input type="text" class="add-tag" placeholder="+ tag" inputmode="text" />
+                <button id="delete" class="delete que">delete</button>
             </div>
         </div>
     </div>

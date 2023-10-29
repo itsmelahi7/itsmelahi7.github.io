@@ -1,3 +1,4 @@
+/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -21,7 +22,9 @@ const analytics = getAnalytics(app);
 // Get a reference to the Firebase Storage
 const storage = getStorage(app);
 
-export function uploadImage() {
+export 
+*/
+function uploadImage() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
@@ -80,6 +83,14 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 var image_url = "";
 
+function setBodyClass(className) {
+    // Remove the existing body class
+    qs(".page-content.main").classList.remove("body-easy", "body-medium", "body-hard");
+
+    // Add the new body class
+    qs(".page-content.main").classList.add(className);
+}
+
 function pageOpen() {
     qs("button#home").addEventListener("click", function () {
         loadPage("prac_que");
@@ -91,6 +102,7 @@ function pageOpen() {
     qs("button#about-me").addEventListener("click", function () {
         loadPage("about");
     });
+    qs("textarea.heading");
 }
 
 function tabMenu() {
@@ -197,6 +209,13 @@ function showQuestion(text) {
     qsa(".que-sec .level").forEach((level) => {
         level.addEventListener("click", function () {
             fil_que[que_no].level = level.textContent;
+            if (level.textContent == "hard") {
+                setBodyClass("body-hard");
+            } else if (level.textContent == "medium") {
+                setBodyClass("body-medium");
+            } else if (level.textContent == "easy") {
+                setBodyClass("body-easy");
+            }
             hide(".que-sec .que-level");
             saveData();
             card = getCardByID(fil_que[que_no].card_id);
@@ -343,6 +362,7 @@ function setEventListners() {
     qs("button#random").addEventListener("click", nextQuestion);
     qs(`button#add-new-que`).addEventListener("click", function (event) {
         createQuestion(event);
+        setTotalQuestions();
     });
 
     setContentSpanTextareaToggle();
@@ -431,14 +451,25 @@ function openCard() {
         img.src = url;
         qs(".image-list").append(img);
     });
+    setTotalImages();
 
     var que_list = qs(".per-que .que-list");
     que_list.innerHTML = "";
 
-    if (card.questions.length != 0) loadCardQuestions();
+    setTotalQuestions();
+    if (card.questions.length != 0) {
+        loadCardQuestions();
+    }
     setTimeout(function () {
         triggerEventListners();
     }, 1000);
+}
+
+function setTotalQuestions() {
+    qs(".per-que .head-text").textContent = `Questions (${card.questions.length})`;
+}
+function setTotalImages() {
+    qs(".image-sec .head-text").textContent = `Images (${card.images.length})`;
 }
 
 function triggerEventListners() {
@@ -610,6 +641,12 @@ function globalEventListner() {
     document.addEventListener("click", (event) => {
         if (event.target.matches("button#add-image")) {
             getImageURL();
+        }
+        if (event.target.matches("textarea.heading")) {
+            event.target.addEventListener("input", (event) => {
+                card.heading = event.target.value;
+                saveData();
+            });
         }
 
         if (event.target.matches("input.add-tag")) {
@@ -874,3 +911,53 @@ var card_template = `<div class="heading-sec">
                             </div>
                         </div>
                     </div>`;
+
+// Get the modal
+const modal = document.getElementById("imageModal");
+const modalImage = document.getElementById("modalImage");
+const captionText = document.getElementById("caption");
+
+// Get the images in the image-list
+const images = document.querySelectorAll(".image-list img");
+
+// Keep track of the currently displayed image
+let currentIndex = 0;
+
+// Open the modal with the clicked image
+images.forEach((image, index) => {
+    image.addEventListener("click", () => {
+        currentIndex = index;
+        modal.style.display = "block";
+        modalImage.src = image.src;
+        captionText.textContent = image.alt;
+    });
+});
+
+// Close the modal
+const closeButton = document.querySelector(".close-button");
+closeButton.addEventListener("click", () => {
+    modal.style.display = "none";
+});
+
+// Handle next and previous buttons
+const prevButton = document.getElementById("prevButton");
+const nextButton = document.getElementById("nextButton");
+
+prevButton.addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    modalImage.src = images[currentIndex].src;
+    captionText.textContent = images[currentIndex].alt;
+});
+
+nextButton.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % images.length;
+    modalImage.src = images[currentIndex].src;
+    captionText.textContent = images[currentIndex].alt;
+});
+
+// Close the modal if the user clicks outside of the modal content
+window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});

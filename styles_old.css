@@ -4,7 +4,7 @@ body>.content {
     width: 65%;
 }
 
-#page-content {
+.page-content {
     background-color: var(--page-bc);
 }
 
