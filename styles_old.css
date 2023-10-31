@@ -4,6 +4,17 @@ body>.content {
     width: 65%;
 }
 
+.popup-alert {
+    position: absolute;
+    top: 4%;
+    background-color: #c4d5c5;
+    padding: 7px;
+    border-radius: 3px;
+    width: 70%;
+    text-align: center;
+}
+
+
 .page-content {
     background-color: var(--page-bc);
 }
@@ -455,13 +466,7 @@ header nav {
 
 
 
-.section {
-    border: 1px solid #ccc;
-    margin: 10px;
-    padding: 10px;
-    background-color: #f8f8f8;
-    border-radius: 5px;
-}
+
 
 .section-header {
     cursor: pointer;
@@ -870,15 +875,6 @@ textarea.add-category {
     padding: 10px;
     display: flex;
     align-items: center;
-}
-
-body>.content>header .menu-button {
-    font-size: calc(var(--font-size) + 12px);
-    background: none;
-    border: none;
-    color: var(--header-color);
-    cursor: pointer;
-    margin-left: auto;
 }
 
 /* Style for the overlay */
@@ -1451,8 +1447,7 @@ div.no-que {
     padding-bottom: 0px;
 }
 
-.add-sec button,
-button.add {
+.add-sec button {
 
     margin-left: auto;
     margin-right: 20px;

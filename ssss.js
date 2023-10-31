@@ -21,10 +21,6 @@ const analytics = getAnalytics(app);
 // Get a reference to the Firebase Storage
 const storage = getStorage(app);
 
-function abc() {
-    console.log("imported abc");
-}
-
 const addImageButton = document.getElementById("addImage");
 addImageButton.addEventListener("click", uploadImage);
 

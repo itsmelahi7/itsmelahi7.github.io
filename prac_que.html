@@ -1,102 +1,129 @@
 <div class="page-content">
-    <div class="search-container">
-        <select id="difficultySelect" class="question-level hide que-level">
-            <option value="all" class="level all">all</option>
-            <option value="easy" class="level easy">easy</option>
-            <option value="medium" class="level medium">medium</option>
-            <option value="hard" class="level hard">hard</option>
-        </select>
-
-        <div class="search-sec">
-            <input type="search" id="search-tag" class="search-tag add-tag" placeholder="filter questions" />
+    <div class="topbar">
+        <div class="search-section card">
+            <input type="search" id="search-card" class="search-card add-card" placeholder="search or create note" />
         </div>
-        <select id="que-type" class="que-type hide">
-            <option value="all" class="level all">all</option>
-            <option value="easy" class="level easy">normal</option>
-            <option value="medium" class="level medium">MCQ</option>
-        </select>
+        <button id="openMenu" class="menu-button">&#9776;</button>
     </div>
-    <div class="que-sec">
-        <span class="que"></span>
-        <div class="que-level">
+    <div class="card-section hide"></div>
+    <div class="question-section practise">
+        <div class="search-section">
+            <input type="search" id="search-tag" class="filter-question" placeholder="filter questions" />
+        </div>
+
+        <span class="question text">Who is the founder of Mughal empire?</span>
+        <div class="question-level">
             <div class="level hard">hard</div>
             <div class="level medium">medium</div>
             <div class="level easy">easy</div>
         </div>
-    </div>
-    <div class="center-btns">
-        <button id="create-new-card">Create a new card</button>
         <button id="random" class="fas fa-random random"></button>
     </div>
-    <br />
-    <div class="card main hide"></div>
 
-    <div class="all-tags-sec">
+    <div class="tasks-section">
+        <div class="all-tag-head head-sec">
+            <div class="fa-solid fa-caret-right caret hide"></div>
+            <div class="fa-solid fa-caret-down caret hide"></div>
+
+            <div class="head-text">Tasks:</div>
+        </div>
+        <div class="all-tags hide"></div>
+    </div>
+
+    <div class="all-tags-section">
         <div class="all-tag-head head-sec">
             <div class="fa-solid fa-caret-right caret"></div>
             <div class="fa-solid fa-caret-down caret hide"></div>
 
-            <div class="head-text">All Categories</div>
-            <div class="right">Sort by:</div>
-            <div class="sort az">A-Z</div>
-            <div class="sort 09">0-9</div>
+            <div class="head-text">Tags:</div>
         </div>
         <div class="all-tags hide"></div>
     </div>
-    <div class="templates hide">
-        <div class="card-template">
+    <div class="templates card-section hide always-hide">
+        <i class="fa-solid fa-arrow-left back-home"></i>
+        <div class="card-body">
             <div class="card-content">
-                <textarea class="heading" rows="1"></textarea>
-                <div class="text-content">
-                    <span class="hide"></span>
-                    <textarea class="" placeholder="Add some text"></textarea>
+                <div class="head-sec">
+                    <textarea class="heading" rows="1">Hello World</textarea>
+                    <button id="delete" class="delete card">delete</button>
                 </div>
 
-                <div class="tag-sec sec card tags">
+                <div class="text-content">
+                    <span class="hide"></span>
+                    <textarea class="" placeholder="Add some text">Hello World Hello World Hello World Hello World Hello World Hello World</textarea>
+                </div>
+
+                <div class="tag-section section card tags">
                     <input type="text" class="add-tag" placeholder="+ tag" inputmode="text" />
                 </div>
                 <hr />
-                <div class="image-sec sec">
+                <div class="card-tabs hide">
+                    <div class="tab">Questions</div>
+                    <div class="tab">Images</div>
+                    <div class="tab">Links</div>
+                </div>
+                <div class="link-section section external-links">
                     <div class="head-sec">
                         <div class="fa-solid fa-caret-right caret"></div>
                         <div class="fa-solid fa-caret-down caret hide"></div>
-                        <div class="head-text">Images(0)</div>
-                        <button id="add-image" class="add-image add right">add image</button>
+                        <div class="head-text">Links</div>
+                        <button id="add-link" class="add-link right">add link</button>
+                    </div>
+                    <div class="link-list main-content hide"></div>
+                </div>
+                <hr />
+                <div class="image-section section">
+                    <div class="head-sec">
+                        <div class="fa-solid fa-caret-right caret"></div>
+                        <div class="fa-solid fa-caret-down caret hide"></div>
+                        <div class="head-text">Images</div>
+                        <button id="add-link" class="add-link right">add image</button>
                     </div>
                     <div class="image-list main-content hide"></div>
                 </div>
             </div>
-            <hr />
-            <div class="que-sec sec">
-                <div class="per-que">
+
+            <div class="question-section">
+                <div class="personal-question section">
                     <div class="head-sec">
                         <div class="fa-solid fa-caret-right caret"></div>
                         <div class="fa-solid fa-caret-down caret hide"></div>
-                        <div class="head-text">Questions (0)</div>
-                        <button id="add-new-que" class="add-new-que add right">add question</button>
+                        <div class="head-text">Questions</div>
+                        <button id="add-new-question" class="add-new-question add right">add question</button>
+                    </div>
+                    <div class="main-content question-list hide"></div>
+                </div>
+                <hr />
+                <div class="public-question section hide">
+                    <div class="head-sec">
+                        <div class="fa-solid fa-caret-right caret"></div>
+                        <div class="fa-solid fa-caret-down caret hide"></div>
+                        <div class="head-text">Public questions</div>
+                        <button id="add-new-question" class="add-new-question add right">add question</button>
                     </div>
                     <div class="main-content que-list hide"></div>
                 </div>
             </div>
         </div>
 
-        <div class="question-template que">
-            <textarea rows="1" placeholder="add question"></textarea>
-            <div class="que-is-mcq hide">
-                <label class="hide">Correct option: </label>
+        <div class="question-template question main hide">
+            <textarea rows="1" class="question" placeholder="add question"></textarea>
+            <div class="question mcq-answer-options hide">
+                <label class="">Correct option: </label>
                 <select class="hide mcq">
                     <option>a</option>
                     <option>b</option>
                     <option>c</option>
                     <option>d</option>
                 </select>
-                <button id="add-mcq-template" class="add-mcq-template right">add mcq template</button>
-                <button id="delete" class="delete que">delete</button>
             </div>
-            <div class="tag-sec que tags">
-                <input type="text" class="add-tag" placeholder="+ tag" inputmode="text" />
-                <button id="delete" class="delete que">delete</button>
+            <div class="tag-section question tags">
+                <input type="text" class="add-tag question" placeholder="+ tag" inputmode="text" />
+                <button id="delete" class="delete question right">delete</button>
             </div>
         </div>
     </div>
+</div>
+<div class="autocomplete-overlay">
+    <ul id="autocomplete-list"></ul>
 </div>

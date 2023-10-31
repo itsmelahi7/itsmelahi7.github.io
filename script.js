@@ -1,3 +1,4 @@
+/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -53,6 +54,92 @@ export function uploadImage() {
     input.click();
 }
 
+// Function to save data as JSON in Firebase Storage
+async function saveDataAsJson(data, fileName) {
+    try {
+        const storageRef = ref(storage, fileName);
+        const jsonBlob = new Blob([JSON.stringify(data)], { type: "application/json" });
+
+        await uploadBytes(storageRef, jsonBlob);
+        console.log(`Data saved as ${fileName}`);
+    } catch (error) {
+        console.error("Error saving data:", error);
+    }
+}
+
+// Function to get data as JSON from Firebase Storage
+/*
+async function getDataFB(fileName) {
+    try {
+        const storageRef = ref(storage, fileName);
+        const url = await getDownloadURL(storageRef);
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error getting data:", error);
+        return null;
+    }
+}
+async function getDataFB(fileName) {
+    try {
+        console.log("Fetching data from", fileName);
+        const storageRef = ref(storage, fileName);
+        const url = await getDownloadURL(storageRef);
+
+        const response = await fetch(url, {
+            mode: "no-cors",
+        });
+
+        if (response.ok) {
+            const data = await response.json(); // Assuming the data is in JSON format
+            console.log("Data fetched successfully");
+            return data;
+        } else {
+            console.error("Failed to fetch data. Status:", response.status);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting data:", error);
+        return null;
+    }
+}
+
+// Example usage
+const myData = { key: "MEHBOOB ELAHI" };
+
+// Save data as JSON
+getData();
+setTimeout(function () {
+    // saveDataAsJson(qq, "meee.json");
+}, 3000);
+
+//saveDataAsJson(qq, "meee.json");
+
+
+getDataFB("myData.json").then((data) => {
+    if (data) {
+        console.log("Retrieved data:", data);
+    } else {
+        console.log("Data not found.");
+    }
+});
+
+
+var ccc = {};
+setTimeout(function () {
+    getDataFB("meee.json").then((data) => {
+        if (data) {
+            ccc = data;
+            console.log("Retrieved data:", data);
+        } else {
+            console.log("Data not found.");
+        }
+    });
+}, 6000);
+*/
+// ------------ MY CODE
+
 var qq = {
     cards: [],
     pages: [],
@@ -68,9 +155,12 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () {
         pageOpen();
         tabMenu();
+        searchCard();
+        onLevelSelection();
+        qs(".back-home").addEventListener("click", toggleCardSection);
     }, 1000);
 
-    globalEventListner();
+    //globalEventListner();
     /*
     const selectImageButton = document.getElementById("selectImage");
     selectImageButton.addEventListener("click", function () {
@@ -78,6 +168,171 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     */
 });
+
+function searchCard() {
+    const searchInput = document.querySelector(".search-card");
+    const autocompleteOverlay = document.querySelector(".autocomplete-overlay");
+    const autocompleteList = document.getElementById("autocomplete-list");
+
+    searchInput.addEventListener("input", function () {
+        var search_value = searchInput.value;
+        const searchValue = searchInput.value.toLowerCase();
+        const searchWords = searchValue.split(/\s+/); // Split search input into words
+        const matchingCards = qq.cards.filter((card) => {
+            const cardText = card.heading.toLowerCase() + " " + card.content.toLowerCase();
+            return searchWords.every((word) => cardText.includes(word));
+        });
+
+        // Clear previous autocomplete suggestions
+        autocompleteList.innerHTML = "";
+
+        if (searchValue) {
+            // Create and display autocomplete suggestions
+            autocompleteOverlay.style.display = "block";
+
+            // Add the searched text at the top
+            const searchTextItem = document.createElement("li");
+            searchTextItem.textContent = "New card: " + search_value;
+            searchTextItem.className = "search-item new-card";
+            autocompleteList.appendChild(searchTextItem);
+            searchTextItem.addEventListener("click", (event) => {
+                createCard(search_value);
+            });
+
+            // Add matching card headings
+            matchingCards.forEach((card) => {
+                const headingItem = document.createElement("li");
+                headingItem.textContent = card.heading;
+                headingItem.className = "search-item heading";
+                headingItem.dataset.id = card.id;
+                autocompleteList.appendChild(headingItem);
+                headingItem.addEventListener("click", (event) => {
+                    card = getCardByID(card.id);
+                    openCard(card);
+                });
+            });
+
+            // Add matching card content
+            matchingCards.forEach((card) => {
+                const contentItem = document.createElement("li");
+                contentItem.textContent = card.content;
+                contentItem.className = "search-item content";
+                contentItem.dataset.id = card.id;
+                autocompleteList.appendChild(contentItem);
+                contentItem.addEventListener("click", (event) => {
+                    card = getCardByID(card.id);
+                    openCard(card);
+                });
+            });
+
+            autocompleteOverlay.style.width = searchInput.offsetWidth + 50 + "px";
+            autocompleteOverlay.style.top = searchInput.offsetTop + 25 + "px";
+            autocompleteOverlay.style.left = searchInput.offsetLeft + "px";
+        } else {
+            // Hide the autocomplete overlay when the search input is empty
+            autocompleteOverlay.style.display = "none";
+        }
+    });
+
+    // Handle click on autocomplete suggestions
+    autocompleteList.addEventListener("click", function (event) {
+        searchInput.value = "";
+        autocompleteOverlay.style.display = "none";
+    });
+}
+
+function setCardEventListner() {
+    qs(".back-home").addEventListener("click", toggleCardSection);
+    qs(".delete.card").addEventListener("click", (event) => {
+        for (var i = 0; i < qq.cards.length; i++) {
+            if (qq.cards[i].id == card.id) {
+                qq.cards.splice(i, 1);
+                break;
+            }
+        }
+        toggleCardSection();
+        popupAlert("Note has been deleted");
+        setTimeout(function () {
+            removePopupAlert();
+        }, 5000);
+    });
+    qs("textarea.heading").addEventListener("input", (event) => {
+        card.heading = event.target.value;
+        saveData();
+    });
+    qs(".text-content textarea").addEventListener("input", (event) => {
+        card.content = event.target.value;
+        saveData();
+    });
+    qs(".card.tags input").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            var tag = event.target.value.trim();
+            addNewTag(tag, event, "card");
+            event.target.value = "";
+            event.target.focus();
+            //updateTags();
+        }
+    });
+    qsa(".caret").forEach((icon) => {
+        icon.addEventListener("click", (event) => {
+            event.target.parentElement.children[0].classList.toggle("hide");
+            event.target.parentElement.children[1].classList.toggle("hide");
+            event.target.parentElement.nextElementSibling.classList.toggle("hide");
+        });
+    });
+
+    setQuestionEventListners();
+
+    textareaAutoHeightSetting();
+}
+function setQuestionEventListners() {
+    qs(".add-new-question").addEventListener("click", createQuestion);
+    qsa(".question.main textarea").forEach((ta) => {
+        ta.addEventListener("input", (event) => {
+            var ta = event.target;
+            var id = getNearestAncestorWithClass(ta, "main").id;
+            setQuestionUsingID(id);
+            que.text = ta.value;
+            saveData();
+        });
+    });
+    qsa(".question.tags input").forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                var tag = event.target.value.trim();
+                addNewTag(tag, event, "question");
+                event.target.value = "";
+                event.target.focus();
+                //updateTags();
+            }
+        });
+    });
+    qsa(".delete.question").forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+            var id = getNearestAncestorWithClass(event.target, "main").id;
+            deleteQuestion(id);
+        });
+    });
+}
+
+function deleteQuestion(id) {
+    card.questions = card.questions.filter((que) => que.id !== id);
+    qs(`#${id}`).remove();
+    saveData();
+    setTotalQuestions();
+}
+
+var que;
+function setQuestionUsingID(id) {
+    var cq = card.questions;
+    for (var i = 0; i < cq.length; i++) {
+        if (cq[i].id == id) {
+            que = cq[i];
+            return;
+        }
+    }
+}
+
 var image_url = "";
 
 function setBodyClass(className) {
@@ -116,9 +371,9 @@ function tabMenu() {
 
 function loadPracQueEventListners() {
     setTimeout(function () {
-        setEventListners();
-        updateTags();
-        filter();
+        //setEventListners();
+        //updateTags();
+        //filter();
     }, 1000);
 }
 
@@ -129,7 +384,7 @@ function closeTabOverlay() {
 
 function loadPage(pageName) {
     //debugger_;
-    const mainContent = document.getElementById("page-content");
+    const mainContent = document.querySelector(".page-container");
     mainContent.innerHTML = "";
     var page_address = `${pageName}.html`;
 
@@ -193,6 +448,23 @@ function nextQuestion() {
     }
 }
 
+function toggleCardSection() {
+    qsa(".page-content > div").forEach((section) => {
+        section.classList.toggle("hide");
+    });
+    show(".topbar");
+}
+
+function popupAlert(message) {
+    var div = createElement("div");
+    div.className = "popup-alert";
+    div.textContent = message;
+    document.body.append(div);
+}
+function removePopupAlert() {
+    qs(".popup-alert").remove();
+}
+
 function showQuestion(text) {
     hide(".card.main");
     show(".que-sec .que-level");
@@ -231,6 +503,15 @@ function getCardByID(id) {
     return null;
 }
 
+function onLevelSelection() {
+    qsa(".question-level .level").forEach((level) => {
+        level.addEventListener("click", (event) => {
+            //que.level = level.textContent;
+            toggleCardSection();
+        });
+    });
+}
+
 function updateTags(event) {
     loadAllTags();
 
@@ -240,7 +521,7 @@ function updateTags(event) {
     }
 }
 var autocompleteList = document.createElement("div");
-autocompleteList.className = "autocomplete-list";
+autocompleteList.className = "autocomplete-lis";
 document.body.append(autocompleteList);
 autocompleteList.style.position = "absolute";
 
@@ -348,13 +629,6 @@ function setEventListnersOnQuestions() {
 function setEventListners() {
     var ele = qs("button#create-new-card");
     if (ele) ele.addEventListener("click", createCard);
-    qsa(".icon.caret").forEach((icon) => {
-        icon.addEventListener("click", function (event) {
-            event.target.parentElement.children[0].classList.toggle("hide");
-            event.target.parentElement.children[1].classList.toggle("hide");
-            event.target.parentElement.nextElementSibling.classList.toggle("hide");
-        });
-    });
 
     qs("button#random").addEventListener("click", nextQuestion);
     qs(`button#add-new-que`).addEventListener("click", function (event) {
@@ -368,13 +642,14 @@ function setEventListners() {
     setEventListnersOnQuestions();
 }
 
-function createCard() {
+function createCard(heading_text) {
     var new_card = {
         id: getID(),
-        heading: "New card heading",
+        heading: heading_text ? heading_text : "New card heading",
         content: "",
         tags: [],
         images: [],
+        links: [],
         questions: [],
         create_date: getTodayDate(),
         update_date: getTodayDate(),
@@ -383,6 +658,7 @@ function createCard() {
     saveData();
     card = new_card;
     openCard();
+    qs("textarea.heading").focus();
 }
 
 function setEventListnersOnTagSection() {}
@@ -413,17 +689,19 @@ function setEventListnersOnTagSection2() {
     });
 }
 
-function openCard() {
-    //
+function openCard(cc) {
+    if (cc) card = cc;
+    if (qs(".card-section.hide")) toggleCardSection();
 
-    qs(".card.main").innerHTML = "";
-    qs(".card.main").innerHTML = getTemplate("card");
-    show(".card.main");
+    qs(".card-section").innerHTML = getTemplate("card");
+
+    //show(".card.main");
     //setEventListners();
     //hide(".que-sec");
 
-    qs(".card-content .heading").value = card.heading;
+    qs(".card-content textarea.heading").value = card.heading;
     qs(".card-content .text-content textarea").value = card.content;
+    /*
     qs(".card-content .text-content span").innerHTML = replaceTextWithMarkup(card.content);
     if (card.content.trim() == "") {
         hide(".card-content .text-content span");
@@ -433,14 +711,11 @@ function openCard() {
         show(".card-content .text-content span");
         hide(".card-content .text-content textarea");
     }
-
-    var tags_div = qs(".card-content .tags");
-    var tags_input_ele = qs(".card-content .tags input");
+    */
+    var tags_div = qs(".tags.card");
+    var tags_input_ele = qs(".card.tags input");
     card.tags.forEach((tag) => {
-        if (tag != "") {
-            var tag_div = addNewTag(tag, "", "load card");
-            tags_div.insertBefore(tag_div, tags_input_ele);
-        }
+        addNewTag(tag, "", "card");
     });
 
     card.images.forEach((url) => {
@@ -450,7 +725,7 @@ function openCard() {
     });
     setTotalImages();
 
-    var que_list = qs(".per-que .que-list");
+    var que_list = qs(".question-list");
     que_list.innerHTML = "";
 
     setTotalQuestions();
@@ -463,13 +738,15 @@ function openCard() {
 }
 
 function setTotalQuestions() {
-    qs(".per-que .head-text").textContent = `Questions (${card.questions.length})`;
+    qs(".personal-question .head-text").textContent = `Questions (${card.questions.length})`;
 }
 function setTotalImages() {
-    qs(".image-sec .head-text").textContent = `Images (${card.images.length})`;
+    qs(".image-section .head-text").textContent = `Images (${card.images.length})`;
 }
 
 function triggerEventListners() {
+    setCardEventListner();
+    return;
     setEventListners();
     textareaAutoHeightSetting();
     setEventListnersOnQuestions();
@@ -478,21 +755,27 @@ function triggerEventListners() {
 
 function loadCardQuestions() {
     var questions = card.questions;
-    var list = qs(".per-que .que-list");
+    var list = qs(".personal-question .question-list");
     questions.forEach((que) => {
         var div = createElement("div");
-        div.className = "que";
+        div.className = "question main";
         div.id = que.id;
-        div.innerHTML = getTemplate("que");
-        div.children[0].value = que.text;
-        var bfr = div.querySelector(".tags input");
-        var tags = div.querySelector(".tags");
+        div.innerHTML = getTemplate("question");
+
+        div.querySelector("textarea").value = que.text;
+        list.append(div);
+
+        var tag_input = div.querySelector(".question.tags input");
+        var tags = div.querySelector(".question.tags");
         que.tags.forEach((tag) => {
-            if (tag.trim() != "") {
-                var dd = addNewTag(tag, "", "load card");
-                tags.insertBefore(dd, bfr);
-            }
+            var div = addNewTag(tag, "", "question");
+            tags.insertBefore(div, tag_input);
+            div.children[1].addEventListener("click", (event) => {
+                div.remove();
+                deleteTag(tag, que.id);
+            });
         });
+        return;
         if (fil_que[que_no].id == que.id) {
             div.style.backgroundColor = "var(--curr-que-bc)";
             div.querySelector(".tag-sec").style.backgroundColor = "var(--curr-que-bc)";
@@ -567,21 +850,16 @@ function createQuestion(event) {
     //card.questions.push(new_question);
     saveData();
 
-    var per_que = getNearestAncestorWithClass(event.target, "per-que");
-    var list = per_que.querySelector(".que-list");
     var div = createElement("div");
-    div.className = "que";
+    div.className = "question main";
     div.id = new_question.id;
-    div.innerHTML = getTemplate("que");
-    var first_child = list.firstElementChild;
-    list.insertBefore(div, first_child);
-    var abc = per_que.querySelector(".fa-caret-down.hide");
-    if (abc) {
-        per_que.querySelector(".fa-caret-right").click();
-    }
-    setEventListnersOnQuestions();
-    setEventListnersOnTagSection();
-    per_que.querySelector(".que-list .que textarea").focus();
+    div.innerHTML = getTemplate("question");
+    var first_que = qs(".personal-question .question-list .question");
+    qs(".personal-question .question-list").insertBefore(div, first_que);
+
+    div.querySelector("textarea").focus();
+    setQuestionEventListners();
+    setTotalQuestions();
 }
 
 function getNearestAncestorWithClass(element, className) {
@@ -595,8 +873,8 @@ function getNearestAncestorWithClass(element, className) {
 }
 
 function getTemplate(type) {
-    if (type == "que") return qs(".question-template").innerHTML;
-    if (type == "card") return qs(".card-template").innerHTML;
+    if (type == "question") return qs(".question-template").innerHTML;
+    if (type == "card") return qs(".templates.card-section").innerHTML;
 }
 
 function getID() {
@@ -616,6 +894,7 @@ function createElement(ele) {
 var interval_save_image;
 async function getImageURL() {
     uploadImage();
+    popupAlert("Image is loading");
     interval_save_image = setInterval(saveImage, 1000);
 }
 
@@ -625,11 +904,13 @@ function saveImage() {
         saveData();
         console.log("IMAGE URL IS ADDED");
         let img = createElement("img");
+        removePopupAlert();
+        setTotalImages();
         img.src = image_url;
         qs(".image-list").append(img);
         console.log("IMAGE URL IS ADDED URL = " + image_url);
         image_url = "";
-        debugger;
+
         clearInterval(interval_save_image);
     }
 }
@@ -699,21 +980,51 @@ function globalEventListner() {
 //const document_event_listner = setInterval(globalEventListner, 1000);
 
 function addNewTag(tag, event, from) {
-    if (tag.trim() == "") return;
+    tag = tag.trim();
+    if (tag == "") return;
 
     var div = createElement("div");
     div.className = "tag";
     div.innerHTML = `<div class="tag-name">${tag}</div>
-                     <div class="tag-delete-icon hide">x</div>`;
-    div.addEventListener("click", function () {
-        div.children[1].classList.toggle("hide");
-    });
-    div.children[1].addEventListener("click", function () {
-        div.remove();
-        if (event.target.className.includes("search")) {
-            filter();
+                     <div class="tag-delete-icon">x</div>`;
+    var is_duplicate = false;
+    if (from == "card") {
+        qsa(".card.tags .tag-name").forEach((div) => {
+            if (div.textContent === tag) is_duplicate = true;
+        });
+        if (is_duplicate) return;
+        var tags = qs(".card.tags");
+        var input = qs(".card.tags input");
+        div.children[1].addEventListener("click", (event) => {
+            div.remove();
+            deleteTag(tag, "card");
+        });
+        tags.insertBefore(div, input);
+        if (event != "") {
+            card.tags.push(tag);
+            saveData();
         }
-    });
+        return;
+    }
+
+    if (from == "question") {
+        if (event != "") {
+            var tags = event.target.parentElement;
+            tags.insertBefore(div, event.target);
+
+            var id = getNearestAncestorWithClass(event.target, "main").id;
+            setQuestionUsingID(id);
+            que.tags.push(tag);
+            saveData();
+            div.children[1].addEventListener("click", (event) => {
+                div.remove();
+                deleteTag(tag, id);
+            });
+        } else {
+            return div;
+        }
+    }
+    return;
     var is_duplicate = false;
 
     if (from) {
@@ -726,6 +1037,18 @@ function addNewTag(tag, event, from) {
     }
     if (event.target.className.includes("search")) {
         filter();
+    }
+}
+
+function deleteTag(tag, arg) {
+    debugger;
+    if (arg == "card") {
+        card.tags = card.tags.filter((item) => item !== tag);
+        saveData();
+    } else {
+        setQuestionUsingID(arg);
+        que.tags = que.tags.filter((tt) => tt !== tag);
+        saveData();
     }
 }
 
@@ -822,7 +1145,7 @@ function saveDataInLocale(key, array) {
     try {
         const jsonData = JSON.stringify(array);
         localStorage.setItem(key, jsonData);
-        console.log(` Data with key "${key}" successfullt saved in locale`);
+        console.log(` Data with key "${key}" saved in locale successfully`);
     } catch (error) {
         console.error(`Error saving data with key "${key}" in local storage:`, error);
     }

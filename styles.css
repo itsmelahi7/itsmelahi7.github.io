@@ -1,12 +1,13 @@
 :root {
     --body-bc: #100707;
+    --logo-color: #005BA1;
     --header-bc: #064199;
     --body-bc: #a7acae;
     --card-bc: #ccd0ff;
     --header-color: #b3c7e9;
-    --page-bc: #EEF4F7;
+    --page-bc: #efefef;
     --center-bc: #D6DFE7;
-    --label-color: #94B1DC;
+    --label-color: #cdcdcd;
     --font-color: #464039;
     --curr-que-bc: #cbddc8;
     --font-size: 20px;
@@ -26,6 +27,9 @@
     }
 }
 
+*:focus {
+    outline: none;
+}
 
 body {
     background-color: var(--body-bc);
@@ -41,47 +45,166 @@ body .content header {
     display: flex;
     flex-wrap: wrap;
     align-content: center;
-    color: var(--header-color);
-    /*border-bottom: 3px solid var(--font-color);*/
-    padding: 5px 10px;
-    background-color: var(--header-bc);
+    color: var(--logo-color);
+    border-bottom: 5px solid var(--logo-color);
 }
+
+.logo {
+    padding: 15px;
+    padding-right: 5px;
+}
+
+.logo img {
+    width: 35px;
+    height: 35px;
+}
+
+.header .app-name {
+    font-size: 35px;
+    margin: 0px;
+    margin-top: 10px;
+}
+
+.header .menu-button {
+    font-size: calc(var(--font-size) + 20px);
+    background: none;
+    border: none;
+    color: var(--logo-color);
+    cursor: pointer;
+    padding: 0px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+    margin-left: auto;
+}
+
+
+
 
 .page-content.main {
     display: grid;
+    background-color: var(--page-bc);
 
 }
 
-
-
-/* Question sec*/
-.que-sec {
-    background-color: var(--center-bc);
-    margin: 10px;
-    padding: 12px;
-    border-radius: 3px;
-}
-
-span.que {
-    font-size: calc(var(--font-size) + 4px);
-}
-
-.que-sec .que-level {
+.search-section.card {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px;
+    margin: 10px;
+    width: 100%;
 }
 
-.que-sec .que-level .level {
-    margin: 0px 5px;
-    cursor: pointer;
+.search-section.card input {
+    width: 60%;
+    min-width: 200px;
+    padding: 6px;
+    text-align: center;
+    border-radius: 20px;
+    border: none;
+    height: 30px;
+}
+
+.caret::before {
+    color: #928484;
+}
+
+.card.tags {
+    margin: 7px 0px;
+}
+
+.tags input {
+    border: none;
+}
+
+.always-hide {
+    display: none !important;
+}
+
+.back-home {
+    margin: 10px;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.topbar {
+    display: flex;
+}
+
+.topbar button {
+    width: 20%;
+    font-size: 30px;
+}
+
+.topbar .sesearch-section {}
+
+input.search-card:focus {
+    outline: auto;
+    outline-color: blue;
+}
+
+/* Question sec*/
+.question-section.practise,
+.card-body,
+.tasks-section,
+.all-tags-section {
+    display: flex;
+    flex-wrap: wrap;
+    border: 0px solid gray;
+    border-radius: 7px;
+    margin: 15px;
+    margin-top: 0px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 0px;
+}
+
+
+.question.text {
+    width: 100%;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.question-section.practise {
+    justify-content: center;
+    align-items: center;
+}
+
+.question-level {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.question-section.practise .search-container {
+    margin: 0px;
+}
+
+input.filter-question {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 21px;
+    text-align: left;
 }
 
 /* end */
 
 
+.card-tabs {
+    display: flex;
+    padding: 10px;
+}
 
+.card-tabs .tab {
+    flex: 1;
+    text-align: center;
+    display: inline;
+}
 
 /* Card */
 .card.main {
@@ -93,14 +216,23 @@ span.que {
     background-color: white;
 }
 
-.card.main .card-content {
+.card-body .card-content {
     background-color: white;
+    width: 100%;
+    padding: 10px 10px 0px 10px;
+    border-radius: 10px;
+}
 
+.card-body .question-section {
+    border-top: 1px solid gray;
+    width: 100%;
+    padding: 0px 10px;
 }
 
 .card-content .heading {
     font-weight: 700;
     background-color: inherit;
+    font-size: calc(var(--font-size) + 7px);
 }
 
 .card-content .text-content {
@@ -120,13 +252,13 @@ span.que {
     cursor: pointer;
 }
 
-.que select {
+.question select {
     border: none;
     border-radius: 6px;
     background-color: inherit;
 }
 
-.que button#delete {
+.question button#delete {
     margin: 0px;
     margin-left: auto;
     background-color: inherit;
@@ -134,7 +266,14 @@ span.que {
 }
 
 hr {
-    margin: 0px
+    margin: 0px 7px;
+}
+
+.head-sec {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
 }
 
 .card .que-sec {
@@ -151,7 +290,7 @@ hr {
     width: 100%;
 }
 
-.que-list .que textarea {
+.que-list .question textarea {
     background-color: inherit;
     width: 100%;
     padding: 6px;
@@ -161,6 +300,20 @@ hr {
     background-color: white;
     padding: 5px
 }
+
+.question-list .question {
+    border-radius: 5px;
+    background-color: #ebebeb;
+    margin: 5px 0px;
+}
+
+.question-list .question textarea {
+    padding: 10px;
+    width: 100%;
+
+}
+
+
 
 textarea {
     min-height: 30px !important;
@@ -189,7 +342,7 @@ textarea {
     margin-right: 5px;
 }
 
-.que-list {
+.question-list {
     max-height: 50vh;
     overflow-y: scroll;
 }
@@ -232,11 +385,7 @@ button#random {
     margin-left: auto;
 }
 
-.head-sec {
-    display: flex;
-    align-items: center;
-    padding: 5px;
-}
+
 
 .visibility,
 .head-text {
@@ -368,22 +517,19 @@ span.bullet {
 }
 
 /* Questions */
-.que-list .que {
-    background-color: #edeaea;
-    padding: 5px;
-    border-radius: 5px;
-    margin: 10px 0px;
-}
 
-.tag-sec.que {
-    margin: 0px;
-    padding: 0px;
+
+.tag-sec.question {
     display: flex;
     flex-wrap: wrap;
 }
 
-.que .tags {
-    margin-left: 0px;
+.question .tags {
+    padding: 10px;
+}
+
+.question .tags input {
+    margin: 0px;
 }
 
 /**/
@@ -515,4 +661,37 @@ h2 {
 
 #nextButton {
     right: 0;
+}
+
+
+
+/* autocompelete */
+.autocomplete-overlay {
+    display: none;
+    position: absolute;
+    border: 1px solid #ccc;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#autocomplete-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.search-item.new-card {
+    color: blue;
+    font-weight: 700;
+}
+
+#autocomplete-list li {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #ddd;
+}
+
+#autocomplete-list li:hover {
+    background-color: #e9e9e9;
 }
