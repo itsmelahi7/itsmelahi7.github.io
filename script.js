@@ -142,22 +142,26 @@ setTimeout(function () {
 
 var qq = {
     cards: [],
+    tasks: [],
     pages: [],
 };
 var card = {};
 var fil_que = [];
 var que_no = 0;
 var tags = [];
+var que, task;
 
 document.addEventListener("DOMContentLoaded", function () {
     getData();
     loadPage("prac_que");
+
     setTimeout(function () {
+        setData();
         pageOpen();
         tabMenu();
         searchCard();
         onLevelSelection();
-        qs(".back-home").addEventListener("click", toggleCardSection);
+        homeEventListners();
     }, 1000);
 
     //globalEventListner();
@@ -168,6 +172,55 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     */
 });
+
+function homeEventListners() {
+    qs("img.create-new-note").addEventListener("click", (event) => {
+        createCard("");
+    });
+    qs(".back-home").addEventListener("click", toggleCardSection);
+    qs("input.add-tag").addEventListener("click", (event) => {
+        setAutoCompelete(event);
+    });
+    qsa(".caret").forEach((icon) => {
+        icon.addEventListener("click", (event) => {
+            var head_sec = getNearestAncestorWithClass(event.target, "head-sec");
+            head_sec.children[0].classList.toggle("hide");
+            head_sec.children[1].classList.toggle("hide");
+            head_sec.nextElementSibling.classList.toggle("hide");
+        });
+    });
+    qs(".task-section input").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            var input = event.target;
+            if (input.value.trim() == "") {
+                popupAlert("add some task text");
+                setTimeout(function () {
+                    removePopupAlert();
+                }, 3000);
+                return;
+            }
+
+            var div = createElement("div");
+            div.className = "task main row";
+            qq.tasks.push(input.value.trim());
+            saveData();
+            div.textContent = input.value;
+            qs(".all-tasks").append(div);
+            input.value = "";
+            input.focus();
+        }
+    });
+    qs("button.random").addEventListener("click", nextQuestion);
+}
+
+function setData() {
+    var cards = sortArrayInRandomOrder(qq.cards);
+    card = cards[0];
+    updateTags();
+    filter();
+}
+
+function setTaskUsingID(id) {}
 
 function searchCard() {
     const searchInput = document.querySelector(".search-card");
@@ -280,7 +333,7 @@ function setCardEventListner() {
             event.target.parentElement.nextElementSibling.classList.toggle("hide");
         });
     });
-
+    qs("button#add-link").addEventListener("click", addExternalLink);
     setQuestionEventListners();
 
     textareaAutoHeightSetting();
@@ -322,7 +375,6 @@ function deleteQuestion(id) {
     setTotalQuestions();
 }
 
-var que;
 function setQuestionUsingID(id) {
     var cq = card.questions;
     for (var i = 0; i < cq.length; i++) {
@@ -404,7 +456,7 @@ function loadPage(pageName) {
 
 function filter() {
     fil_que = [];
-    var tags = qsa(".search-sec .tag-name");
+    var tags = qsa(".search-section .tag-name");
     qq.cards.forEach((card) => {
         fil_que = fil_que.concat(card.questions);
     });
@@ -466,28 +518,32 @@ function removePopupAlert() {
 }
 
 function showQuestion(text) {
-    hide(".card.main");
-    show(".que-sec .que-level");
-    //show(".que-sec");
+    debugger;
     if (text) {
-        qs(".que-sec span.que").textContent = text;
+        qs("span.question").textContent = text;
+        hide(".question-level");
+        hide("button.random");
         return;
     }
-    qs(".que-sec span.que").textContent = replaceTextWithMarkup(fil_que[que_no].text);
+    show(".question-level");
+    show("button.random");
 
-    qsa(".que-sec .level").forEach((level) => {
+    qs("span.question").textContent = replaceTextWithMarkup(fil_que[que_no].text);
+    card = getCardByID(fil_que[que_no].card_id);
+
+    qsa(".question-level .level").forEach((level) => {
         level.addEventListener("click", function () {
             fil_que[que_no].level = level.textContent;
             if (level.textContent == "hard") {
-                setBodyClass("body-hard");
+                //setBodyClass("body-hard");
             } else if (level.textContent == "medium") {
-                setBodyClass("body-medium");
+                // setBodyClass("body-medium");
             } else if (level.textContent == "easy") {
-                setBodyClass("body-easy");
+                // setBodyClass("body-easy");
             }
             hide(".que-sec .que-level");
             saveData();
-            card = getCardByID(fil_que[que_no].card_id);
+
             openCard();
         });
     });
@@ -508,20 +564,19 @@ function onLevelSelection() {
         level.addEventListener("click", (event) => {
             //que.level = level.textContent;
             toggleCardSection();
+            openCard();
         });
     });
 }
 
 function updateTags(event) {
     loadAllTags();
-
-    setAllTags();
-    if (event) {
-        setAutoCompelete(event);
-    }
+    setTimeout(function () {
+        setAllTags();
+    }, 1000);
 }
 var autocompleteList = document.createElement("div");
-autocompleteList.className = "autocomplete-lis";
+autocompleteList.className = "autocomplete-list";
 document.body.append(autocompleteList);
 autocompleteList.style.position = "absolute";
 
@@ -550,8 +605,8 @@ function setAutoCompelete(event) {
             item.textContent = name;
 
             item.addEventListener("click", function () {
-                input.value = ""; //input.value = name;
-                addNewTag(name, event);
+                addNewTag(name, event, "filter-question");
+                input.value = "";
                 input.focus();
                 autocompleteList.classList.remove("active");
             });
@@ -588,26 +643,24 @@ function setAllTags() {
             }
         });
 
-        var ttt = tag + " " + i;
-        var div = addNewTag(ttt, "", "all tags");
-        all_tags.append(div);
+        var ttt = tag + " - " + i;
+        addNewTag(ttt, "", "all tags");
+        //all_tags.append(div);
     });
 }
 function loadAllTags() {
+    const uniqueTags = new Set();
     qq.cards.forEach((card) => {
         card.tags.forEach((tag) => {
-            if (!tags.includes(tag)) {
-                tags.push(tag);
-            }
+            uniqueTags.add(tag);
         });
         card.questions.forEach((que) => {
             que.tags.forEach((tag) => {
-                if (!tags.includes(tag)) {
-                    tags.push(tag);
-                }
+                uniqueTags.add(tag);
             });
         });
     });
+    tags = Array.from(uniqueTags);
 }
 
 function setEventListnersOnQuestions() {
@@ -643,9 +696,10 @@ function setEventListners() {
 }
 
 function createCard(heading_text) {
+    debugger;
     var new_card = {
         id: getID(),
-        heading: heading_text ? heading_text : "New card heading",
+        heading: heading_text != undefined ? heading_text : "New card heading",
         content: "",
         tags: [],
         images: [],
@@ -853,6 +907,9 @@ function createQuestion(event) {
     var div = createElement("div");
     div.className = "question main";
     div.id = new_question.id;
+    if (qs(".main .question-list.hide")) {
+        qs(".personal-question .caret ").click();
+    }
     div.innerHTML = getTemplate("question");
     var first_que = qs(".personal-question .question-list .question");
     qs(".personal-question .question-list").insertBefore(div, first_que);
@@ -875,6 +932,7 @@ function getNearestAncestorWithClass(element, className) {
 function getTemplate(type) {
     if (type == "question") return qs(".question-template").innerHTML;
     if (type == "card") return qs(".templates.card-section").innerHTML;
+    if (type == "link") return qs(".link-template").innerHTML;
 }
 
 function getID() {
@@ -1005,9 +1063,7 @@ function addNewTag(tag, event, from) {
             saveData();
         }
         return;
-    }
-
-    if (from == "question") {
+    } else if (from == "question") {
         if (event != "") {
             var tags = event.target.parentElement;
             tags.insertBefore(div, event.target);
@@ -1023,6 +1079,29 @@ function addNewTag(tag, event, from) {
         } else {
             return div;
         }
+    } else if (from == "all tags") {
+        div.children[1].remove();
+        qs(".all-tags").append(div);
+        div.children[0].addEventListener("click", (event) => {
+            debugger;
+            var tag = div.children[0].textContent.split("-")[0].trim();
+            addNewTag(tag, "all-tags", "filter-question");
+        });
+    } else if (from == "filter-question") {
+        debugger;
+        var tags = qs(".filter-question.tags");
+        if (event == "all-tags") {
+            qsa(".filter-question.tags .tag").forEach((tag) => {
+                tag.remove();
+            });
+        }
+        var input = qs(".filter-question.tags input");
+        tags.insertBefore(div, input);
+        div.children[1].addEventListener("click", (event) => {
+            div.remove();
+            filter();
+        });
+        filter();
     }
     return;
     var is_duplicate = false;
@@ -1041,7 +1120,6 @@ function addNewTag(tag, event, from) {
 }
 
 function deleteTag(tag, arg) {
-    debugger;
     if (arg == "card") {
         card.tags = card.tags.filter((item) => item !== tag);
         saveData();
@@ -1082,6 +1160,40 @@ function addTagInDataArray(tag, event, div) {
         }
     }
     return false;
+}
+
+function addExternalLink() {
+    var div = createElement("div");
+    div.className = "external-link main";
+    div.innerHTML = getTemplate("link");
+    var link_list = qs(".link-list");
+    link_list.append(div);
+    if (qs(".link-list.hide")) {
+        qs(".link-section .caret").click();
+    }
+    div.children[0].focus();
+    qs("#add-new-link").addEventListener("click", (event) => {
+        if (qs(".link-text").value == "") {
+            qs(".link-text").focus;
+            return;
+        } else if (qs(".link.url").value == "") {
+            qs(".link.url").focus;
+            return;
+        } else {
+            card.links.push({
+                text: qs(".link-text").value.trim(),
+                url: qs(".link.url").value.trim(),
+            });
+            saveData();
+            var a = createElement("a");
+            a.className = "link";
+            a.textContent = qs(".link-text").value.trim();
+            a.href = qs(".link.url").value.trim();
+            a.target = "_blank";
+            qs(".link-list").append(a);
+            div.remove();
+        }
+    });
 }
 
 function getTodayDate() {
@@ -1138,7 +1250,28 @@ function getData() {
     var data = getDataFromLocale("revise_app_data");
     if (data) {
         qq = data;
+    } else {
+        setTimeout(function () {
+            firsttime();
+        }, 1000);
     }
+}
+
+function firsttime() {
+    debugger;
+    hide(".page-content");
+    var div = createElement("div");
+    div.className = "welcome";
+    div.textContent = "Welcome to a new journey of learning";
+    var btn = createElement("button");
+    btn.textContent = "Create your first note";
+    div.append(btn);
+    btn.addEventListener("click", (event) => {
+        show(".page-content");
+        createCard("My First Note");
+        div.remove();
+    });
+    qs(".content").append(div);
 }
 
 function saveDataInLocale(key, array) {
@@ -1281,3 +1414,40 @@ window.addEventListener("click", (event) => {
         modal.style.display = "none";
     }
 });
+
+function loadClient() {
+    gapi.load("client", initClient);
+}
+
+function handleClientLoadError() {
+    console.error("Failed to load the Google API Client Library.");
+}
+
+function initClient() {
+    gapi.client
+        .init({
+            apiKey: "AIzaSyCv2koOkHrqG_ioHoOU1vuDfI2KPwLNTZM",
+            clientId: "264373202075-iros614h9fu6octjqsri0m9tbbulb178.apps.googleusercontent.com",
+            discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
+            scope: "https://www.googleapis.com/auth/youtube.force-ssl",
+        })
+        .then(function () {
+            // API is ready for use
+        })
+        .catch(function (error) {
+            console.error("Error initializing the API client: " + error.message);
+        });
+}
+function embedVideo(videoId) {
+    gapi.client.youtube
+        .list({
+            part: "snippet",
+            id: videoId,
+        })
+        .then(function (response) {
+            var videoDetails = response.result.items[0].snippet;
+            var videoTitle = videoDetails.title;
+
+            // Create a video player or display the video using the videoDetails.
+        });
+}

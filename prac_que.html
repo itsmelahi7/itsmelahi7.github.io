@@ -1,17 +1,20 @@
 <div class="page-content">
     <div class="topbar">
         <div class="search-section card">
-            <input type="search" id="search-card" class="search-card add-card" placeholder="search or create note" />
-        </div>
-        <button id="openMenu" class="menu-button">&#9776;</button>
-    </div>
-    <div class="card-section hide"></div>
-    <div class="question-section practise">
-        <div class="search-section">
-            <input type="search" id="search-tag" class="filter-question" placeholder="filter questions" />
+            <input type="search" id="search-card" class="search-input search-card add-card" placeholder="search or create note" />
         </div>
 
-        <span class="question text">Who is the founder of Mughal empire?</span>
+        <img src="./assets/new_note.png" class="create-new-note" />
+
+        <button id="openMenu" class="menu-button">&#9776;</button>
+    </div>
+    <div class="card-section main hide"></div>
+    <div class="question-section practise">
+        <div class="search-section filter-question tags">
+            <input type="search" id="search-tag" class="filter-question add-tag" placeholder="filter questions" />
+        </div>
+
+        <span class="question text"></span>
         <div class="question-level">
             <div class="level hard">hard</div>
             <div class="level medium">medium</div>
@@ -20,24 +23,34 @@
         <button id="random" class="fas fa-random random"></button>
     </div>
 
-    <div class="tasks-section">
-        <div class="all-tag-head head-sec">
-            <div class="fa-solid fa-caret-right caret hide"></div>
-            <div class="fa-solid fa-caret-down caret hide"></div>
-
-            <div class="head-text">Tasks:</div>
+    <div class="task-section">
+        <div class="head-sec">
+            <div class="fa-solid fa-chevron-right"></div>
+            <div class="fa-solid fa-chevron-down caret hide"></div>
+            <div class="head-text caret row">
+                <h3>To-Do List</h3>
+                <img src="./assets/todolist.png" />
+            </div>
         </div>
-        <div class="all-tags hide"></div>
+        <div class="content-sec hide">
+            <input type="text" placeholder="Type task here and then enter" />
+            <div class="all-tasks"></div>
+        </div>
     </div>
 
     <div class="all-tags-section">
-        <div class="all-tag-head head-sec">
-            <div class="fa-solid fa-caret-right caret"></div>
-            <div class="fa-solid fa-caret-down caret hide"></div>
-
-            <div class="head-text">Tags:</div>
+        <div class="head-sec">
+            <div class="fa-solid fa-chevron-right"></div>
+            <div class="fa-solid fa-chevron-down caret hide"></div>
+            <div class="head-text caret row">
+                <h3>All Tags</h3>
+                <img src="./assets/tag.png" />
+            </div>
         </div>
-        <div class="all-tags hide"></div>
+        <div class="main-content hide">
+            <span class="hide"> The number shows the total number of questions linked with each tag.</span>
+            <div class="all-tags"></div>
+        </div>
     </div>
     <div class="templates card-section hide always-hide">
         <i class="fa-solid fa-arrow-left back-home"></i>
@@ -66,7 +79,7 @@
                     <div class="head-sec">
                         <div class="fa-solid fa-caret-right caret"></div>
                         <div class="fa-solid fa-caret-down caret hide"></div>
-                        <div class="head-text">Links</div>
+                        <div class="head-text caret">Links</div>
                         <button id="add-link" class="add-link right">add link</button>
                     </div>
                     <div class="link-list main-content hide"></div>
@@ -76,7 +89,7 @@
                     <div class="head-sec">
                         <div class="fa-solid fa-caret-right caret"></div>
                         <div class="fa-solid fa-caret-down caret hide"></div>
-                        <div class="head-text">Images</div>
+                        <div class="head-text caret">Images</div>
                         <button id="add-link" class="add-link right">add image</button>
                     </div>
                     <div class="image-list main-content hide"></div>
@@ -88,7 +101,7 @@
                     <div class="head-sec">
                         <div class="fa-solid fa-caret-right caret"></div>
                         <div class="fa-solid fa-caret-down caret hide"></div>
-                        <div class="head-text">Questions</div>
+                        <div class="head-text caret">Questions</div>
                         <button id="add-new-question" class="add-new-question add right">add question</button>
                     </div>
                     <div class="main-content question-list hide"></div>
@@ -104,6 +117,16 @@
                     <div class="main-content que-list hide"></div>
                 </div>
             </div>
+        </div>
+
+        <div class="link-template hide">
+            <input type="text" class="link-text link" placeholder="add some text about link" />
+            <input type="text" class="link url" placeholder="paste link here" />
+            <button id="add-new-link">done</button>
+        </div>
+        <div class="task-template hide">
+            <input type="checkbox" />
+            <input type="text" />
         </div>
 
         <div class="question-template question main hide">
