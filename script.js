@@ -1,4 +1,3 @@
-/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -55,7 +54,7 @@ export function uploadImage() {
 
     input.click();
 }
-
+/*
 // Function to save data as JSON in Firebase Storage
 async function saveDataAsJson(data, fileName) {
     try {
@@ -70,7 +69,7 @@ async function saveDataAsJson(data, fileName) {
 }
 
 // Function to get data as JSON from Firebase Storage
-/*
+
 async function getDataFB(fileName) {
     try {
         const storageRef = ref(storage, fileName);
