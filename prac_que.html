@@ -57,7 +57,7 @@
         <div class="card-body">
             <div class="card-content">
                 <div class="head-sec">
-                    <textarea class="heading" rows="1">Hello World</textarea>
+                    <textarea class="heading" rows="1" placeholder="add heading">Hello World</textarea>
                     <button id="delete" class="delete card">delete</button>
                 </div>
 
@@ -77,8 +77,8 @@
                 </div>
                 <div class="link-section section external-links">
                     <div class="head-sec">
-                        <div class="fa-solid fa-caret-right caret"></div>
-                        <div class="fa-solid fa-caret-down caret hide"></div>
+                        <div class="fa-solid fa-chevron-right"></div>
+                        <div class="fa-solid fa-chevron-down caret hide"></div>
                         <div class="head-text caret">Links</div>
                         <button id="add-link" class="add-link right">add link</button>
                     </div>
@@ -87,20 +87,27 @@
                 <hr />
                 <div class="image-section section">
                     <div class="head-sec">
-                        <div class="fa-solid fa-caret-right caret"></div>
-                        <div class="fa-solid fa-caret-down caret hide"></div>
+                        <div class="fa-solid fa-chevron-right"></div>
+                        <div class="fa-solid fa-chevron-down caret hide"></div>
                         <div class="head-text caret">Images</div>
-                        <button id="add-link" class="add-link right">add image</button>
+                        <button id="add-image" class="add-image right">add image</button>
                     </div>
                     <div class="image-list main-content hide"></div>
+                </div>
+            </div>
+            <div class="image-template main hide">
+                <img />
+                <div class="icons">
+                    <div class="fa-solid fa-trash"></div>
+                    <div class="fa-solid fa-copy"></div>
                 </div>
             </div>
 
             <div class="question-section">
                 <div class="personal-question section">
                     <div class="head-sec">
-                        <div class="fa-solid fa-caret-right caret"></div>
-                        <div class="fa-solid fa-caret-down caret hide"></div>
+                        <div class="fa-solid fa-chevron-right"></div>
+                        <div class="fa-solid fa-chevron-down caret hide"></div>
                         <div class="head-text caret">Questions</div>
                         <button id="add-new-question" class="add-new-question add right">add question</button>
                     </div>
@@ -109,8 +116,8 @@
                 <hr />
                 <div class="public-question section hide">
                     <div class="head-sec">
-                        <div class="fa-solid fa-caret-right caret"></div>
-                        <div class="fa-solid fa-caret-down caret hide"></div>
+                        <div class="fa-solid fa-chevron-right"></div>
+                        <div class="fa-solid fa-chevron-down caret hide"></div>
                         <div class="head-text">Public questions</div>
                         <button id="add-new-question" class="add-new-question add right">add question</button>
                     </div>
@@ -131,6 +138,7 @@
 
         <div class="question-template question main hide">
             <textarea rows="1" class="question" placeholder="add question"></textarea>
+
             <div class="question mcq-answer-options hide">
                 <label class="">Correct option: </label>
                 <select class="hide mcq">

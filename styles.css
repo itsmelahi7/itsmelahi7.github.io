@@ -322,13 +322,39 @@ hr {
 .question-list .question {
     border-radius: 5px;
     background-color: #ebebeb;
-    margin: 5px 0px;
+    margin: 10px 0px;
 }
 
-.question-list .question textarea {
+.question-list .question.main textarea {
     padding: 10px;
-    width: 100%;
+    width: 90%;
 
+}
+
+.column {
+    display: grid;
+}
+
+.image.main img {
+    width: 90%;
+}
+
+.image.main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin: 10px 0px;
+}
+
+.image.main .icons {
+    display: flex;
+    flex-direction: column;
+}
+
+.image.main .icons div {
+    font-size: 22px;
+    margin-left: 10px;
+    cursor: pointer;
 }
 
 
@@ -1680,10 +1706,17 @@ textarea.add-category {
     align-items: center;
 }
 
+
+.card-section.main {
+    overflow: scroll;
+    height: 80vh;
+}
+
 /* Style for the overlay */
 body>.content {
     position: relative;
-    background-image: linear-gradient(-20deg, #b721ff 0%, #21d4fd 100%);
+    background-color: #4158D0;
+    background-image: linear-gradient(43deg, #4158D0 0%, #ce42c3 22%, #50ceb1 49%, #5cc360 75%, #2d3bec 100%);
     height: 100vh;
 }
 

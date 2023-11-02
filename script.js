@@ -28,6 +28,8 @@ export function uploadImage() {
     input.accept = "image/*";
     input.onchange = (e) => {
         const file = e.target.files[0];
+        popupAlert("Image is loading");
+        interval_save_image = setInterval(saveImage, 1000);
         if (file) {
             const storageRef = ref(storage, `images/${file.name}`);
             const uploadTask = uploadBytes(storageRef, file);
@@ -326,14 +328,16 @@ function setCardEventListner() {
             //updateTags();
         }
     });
-    qsa(".caret").forEach((icon) => {
+    qsa(".card-body .caret").forEach((icon) => {
         icon.addEventListener("click", (event) => {
-            event.target.parentElement.children[0].classList.toggle("hide");
-            event.target.parentElement.children[1].classList.toggle("hide");
-            event.target.parentElement.nextElementSibling.classList.toggle("hide");
+            var head_sec = getNearestAncestorWithClass(event.target, "head-sec");
+            head_sec.children[0].classList.toggle("hide");
+            head_sec.children[1].classList.toggle("hide");
+            head_sec.nextElementSibling.classList.toggle("hide");
         });
     });
     qs("button#add-link").addEventListener("click", addExternalLink);
+    qs("button#add-image").addEventListener("click", getImageURL);
     setQuestionEventListners();
 
     textareaAutoHeightSetting();
@@ -773,9 +777,30 @@ function openCard(cc) {
     });
 
     card.images.forEach((url) => {
-        var img = createElement("img");
-        img.src = url;
-        qs(".image-list").append(img);
+        var div = createElement("div");
+        div.className = "image main";
+        div.innerHTML = getTemplate("image");
+
+        div.children[0].src = url;
+
+        qs(".image-list").append(div);
+        div.querySelector(".fa-trash").addEventListener("click", (event) => {
+            debugger;
+            var child = getNearestAncestorWithClass(event.target, "main");
+            var parent = child.parentElement;
+            var index = Array.from(parent.children).indexOf(child);
+            card.images = card.images.filter((_, i) => i !== index);
+            saveData();
+            setTotalImages();
+            div.remove();
+        });
+        div.querySelector(".fa-copy").addEventListener("click", (event) => {
+            copyToClipboard(div.children[0].src);
+            popupAlert("image link is copied to clipboard");
+            setTimeout(function () {
+                removePopupAlert();
+            }, 3000);
+        });
     });
     setTotalImages();
 
@@ -933,6 +958,7 @@ function getTemplate(type) {
     if (type == "question") return qs(".question-template").innerHTML;
     if (type == "card") return qs(".templates.card-section").innerHTML;
     if (type == "link") return qs(".link-template").innerHTML;
+    if (type == "image") return qs(".image-template").innerHTML;
 }
 
 function getID() {
@@ -952,23 +978,49 @@ function createElement(ele) {
 var interval_save_image;
 async function getImageURL() {
     uploadImage();
-    popupAlert("Image is loading");
-    interval_save_image = setInterval(saveImage, 1000);
 }
 
-function saveImage() {
+function saveImage(url) {
     if (image_url != "") {
+        debugger;
         card.images.push(image_url);
         saveData();
         console.log("IMAGE URL IS ADDED");
-        let img = createElement("img");
+
+        var div = createElement("div");
+        div.className = "image main";
+        div.innerHTML = getTemplate("image");
+
+        div.children[0].src = image_url;
         removePopupAlert();
         setTotalImages();
-        img.src = image_url;
-        qs(".image-list").append(img);
+
+        qs(".image-list").append(div);
+        if (qs(".image-list.hide")) {
+            qs(".image-section .caret ").click();
+        }
+        var last_child = qs(".image-list .image:last-child");
+        last_child.scrollIntoView({ behavior: "smooth" });
         console.log("IMAGE URL IS ADDED URL = " + image_url);
         image_url = "";
 
+        div.querySelector(".fa-trash").addEventListener("click", (event) => {
+            debugger;
+            var child = getNearestAncestorWithClass(event.target, "main");
+            var parent = child.parentElement;
+            var index = Array.from(parent.children).indexOf(child);
+            card.images = card.images.filter((_, i) => i !== index);
+            saveData();
+            setTotalImages();
+            div.remove();
+        });
+        div.querySelector(".fa-copy").addEventListener("click", (event) => {
+            copyToClipboard(div.children[0].src);
+            popupAlert("image link is copied to clipboard");
+            setTimeout(function () {
+                removePopupAlert();
+            }, 3000);
+        });
         clearInterval(interval_save_image);
     }
 }
@@ -1194,6 +1246,23 @@ function addExternalLink() {
             div.remove();
         }
     });
+}
+
+function copyToClipboard(text) {
+    // Create a temporary input element
+    const input = document.createElement("input");
+    input.value = text;
+    document.body.appendChild(input);
+
+    // Select the text in the input field
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile devices
+
+    // Copy the selected text to the clipboard
+    document.execCommand("copy");
+
+    // Remove the temporary input element
+    document.body.removeChild(input);
 }
 
 function getTodayDate() {
