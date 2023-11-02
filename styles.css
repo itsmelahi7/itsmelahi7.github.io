@@ -348,9 +348,11 @@ textarea.heading {
 }
 
 .quick-question {
-    background-color: white;
-    padding: 0px 12px;
-    width: 100%;
+    background-color: #d4d8ff;
+    padding: 12px;
+    /* width: 100%; */
+    margin: 15px;
+    border-radius: 7px;
 }
 
 button.add-quick-question {
@@ -390,10 +392,7 @@ button.add-quick-question {
 
 
 
-textarea {
-    min-height: 30px !important;
-    width: 100%;
-}
+
 
 .card .image-list img {
     width: 90%;
@@ -535,6 +534,8 @@ button#random {
     overflow-x: scroll;
     flex-wrap: wrap;
     padding: 0px 5px;
+    justify-items: center;
+    align-items: center;
 }
 
 .tag {
@@ -1627,7 +1628,14 @@ body .hide {
 
 
 textarea {
-    background-color: white;
+    background-color: inherit;
+    min-height: 24px !important;
+    width: 100%;
+}
+
+input {
+    background-color: inherit;
+    min-height: 24px !important;
 }
 
 .search-level,

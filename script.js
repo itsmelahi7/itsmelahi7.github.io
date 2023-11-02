@@ -1,3 +1,4 @@
+/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -193,12 +194,12 @@ function homeEventListners() {
     });
     qs(".topbar .search.icon").addEventListener("click", (event) => {
         hide(".topbar .search.icon");
-        show(".topbar .search-input");
+        show(".topbar .search-section");
         qs(".topbar .search-input").focus();
     });
     qs(".topbar .search-input").addEventListener("blur", (event) => {
         show(".topbar .search.icon");
-        hide(".topbar .search-input");
+        hide(".topbar .search-section");
     });
 
     qs(".back-home").addEventListener("click", toggleCardSection);
@@ -235,6 +236,51 @@ function homeEventListners() {
         }
     });
     qs("button.random").addEventListener("click", nextQuestion);
+    qs(".quick-question  .tags input").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            var input = event.target;
+            var tag = input.value.trim().toLowerCase();
+            addNewTag(tag, event, "quick");
+            input.value = "";
+            input.focus();
+        }
+    });
+    qs(".add-quick-question").addEventListener("click", (event) => {
+        var ta = qs(".quick-question textarea");
+        if (ta.value.trim() == "") {
+            return;
+        }
+        var tags = [];
+        qsa(".quick-question .tag-name").forEach((tag) => {
+            tag = tag.textContent.trim().toLowerCase();
+            if (!tags.includes(tag)) {
+                tags.push(tag);
+            }
+        });
+
+        var new_question = {
+            id: getID(),
+            text: ta.value.trim(),
+            type: "",
+            answer: "",
+            card_id: "",
+            tags: tags,
+            level: "hard",
+            create_date: getTodayDate(),
+            update_date: getTodayDate(),
+            revision_date: getRevisiondate(0),
+        };
+        qq.quick_questions.push(new_question);
+        saveData();
+        ta.value = "";
+        qsa(".quick-question tag").forEach((tag) => {
+            tag.remove();
+        });
+        ta.focus();
+        qsa(".quick-question .tag").forEach((tag) => {
+            tag.remove();
+        });
+    });
 }
 
 function setData() {
@@ -1224,6 +1270,12 @@ function addNewTag(tag, event, from) {
             filter();
         });
         filter();
+    } else if (from == "quick") {
+        var tags = event.target.parentElement;
+        tags.insertBefore(div, event.target);
+        div.children[1].addEventListener("click", (event) => {
+            div.remove();
+        });
     }
     return;
     var is_duplicate = false;
