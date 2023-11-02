@@ -175,11 +175,32 @@ document.addEventListener("DOMContentLoaded", function () {
     */
 });
 
+function isDailyNoteExist(id) {
+    for (var i = 0; i < qq.cards.length; i++) {
+        if (qq.cards[i].id == id) {
+            return qq.cards[i];
+        }
+    }
+    return false;
+}
+
 function homeEventListners() {
-    qs(".create-new-note").addEventListener("click", (event) => {
-        debugger;
-        createCard("");
+    qs(".daily-note").addEventListener("click", (event) => {
+        createCard("daily-note");
     });
+    qs(".create-new-note").addEventListener("click", (event) => {
+        createCard("Untitled");
+    });
+    qs(".topbar .search.icon").addEventListener("click", (event) => {
+        hide(".topbar .search.icon");
+        show(".topbar .search-input");
+        qs(".topbar .search-input").focus();
+    });
+    qs(".topbar .search-input").addEventListener("blur", (event) => {
+        show(".topbar .search.icon");
+        hide(".topbar .search-input");
+    });
+
     qs(".back-home").addEventListener("click", toggleCardSection);
     qs("input.add-tag").addEventListener("click", (event) => {
         setAutoCompelete(event);
@@ -523,7 +544,6 @@ function removePopupAlert() {
 }
 
 function showQuestion(text) {
-    debugger;
     if (text) {
         qs("span.question").textContent = text;
         hide(".question-level");
@@ -702,9 +722,22 @@ function setEventListners() {
 
 function createCard(heading_text) {
     debugger;
+    var heading = heading_text != undefined ? heading_text : "New card heading";
+    var id;
+    if (heading == "daily-note") {
+        var date = getFormattedDates();
+        var card = isDailyNoteExist(date[0]);
+        if (card) {
+            openCard(card);
+            return;
+        }
+
+        id = date[0];
+        heading = date[1];
+    }
     var new_card = {
-        id: getID(),
-        heading: heading_text != undefined ? heading_text : "New card heading",
+        id: id != undefined ? id : getID(),
+        heading: heading,
         content: "",
         tags: [],
         images: [],
@@ -716,8 +749,7 @@ function createCard(heading_text) {
     qq.cards.push(new_card);
     saveData();
     card = new_card;
-    openCard();
-    qs("textarea.heading").focus();
+    openCard(new_card);
 }
 
 function setEventListnersOnTagSection() {}
@@ -759,7 +791,17 @@ function openCard(cc) {
     //hide(".que-sec");
 
     qs(".card-content textarea.heading").value = card.heading;
+
+    if (card.id.indexOf("-") != -1) {
+        var span = createElement("span");
+        span.className = "heading";
+        span.textContent = card.heading;
+        qs(".card-content textarea.heading").replaceWith(span);
+    } else {
+        qs("textarea.heading").focus();
+    }
     qs(".card-content .text-content textarea").value = card.content;
+
     /*
     qs(".card-content .text-content span").innerHTML = replaceTextWithMarkup(card.content);
     if (card.content.trim() == "") {
@@ -786,7 +828,6 @@ function openCard(cc) {
 
         qs(".image-list").append(div);
         div.querySelector(".fa-trash").addEventListener("click", (event) => {
-            debugger;
             var child = getNearestAncestorWithClass(event.target, "main");
             var parent = child.parentElement;
             var index = Array.from(parent.children).indexOf(child);
@@ -818,6 +859,36 @@ function openCard(cc) {
     textareaAutoHeightSetting();
 }
 
+function getFormattedDates() {
+    const today = new Date();
+
+    // Format for "yyyy-mm-dd"
+    const yyyy_mm_dd = today.toISOString().split("T")[0];
+
+    // Format for "Month day, year" with "2nd", "3rd", etc.
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const month_day_year = today.toLocaleDateString(undefined, options);
+    const day = today.getDate();
+    const dayWithSuffix = getDayWithSuffix(day);
+
+    return [yyyy_mm_dd, month_day_year.replace(String(day), dayWithSuffix)];
+}
+
+function getDayWithSuffix(day) {
+    if (day >= 11 && day <= 13) {
+        return day + "th";
+    }
+    switch (day % 10) {
+        case 1:
+            return day + "st";
+        case 2:
+            return day + "nd";
+        case 3:
+            return day + "rd";
+        default:
+            return day + "th";
+    }
+}
 function setTotalQuestions() {
     qs(".personal-question .head-text").textContent = `Questions (${card.questions.length})`;
 }
@@ -985,7 +1056,6 @@ async function getImageURL() {
 
 function saveImage(url) {
     if (image_url != "") {
-        debugger;
         card.images.push(image_url);
         saveData();
         console.log("IMAGE URL IS ADDED");
@@ -1008,7 +1078,6 @@ function saveImage(url) {
         image_url = "";
 
         div.querySelector(".fa-trash").addEventListener("click", (event) => {
-            debugger;
             var child = getNearestAncestorWithClass(event.target, "main");
             var parent = child.parentElement;
             var index = Array.from(parent.children).indexOf(child);
@@ -1138,12 +1207,10 @@ function addNewTag(tag, event, from) {
         div.children[1].remove();
         qs(".all-tags").append(div);
         div.children[0].addEventListener("click", (event) => {
-            debugger;
             var tag = div.children[0].textContent.split("-")[0].trim();
             addNewTag(tag, "all-tags", "filter-question");
         });
     } else if (from == "filter-question") {
-        debugger;
         var tags = qs(".filter-question.tags");
         if (event == "all-tags") {
             qsa(".filter-question.tags .tag").forEach((tag) => {
@@ -1330,7 +1397,6 @@ function getData() {
 }
 
 function firsttime() {
-    debugger;
     hide(".page-content");
     var div = createElement("div");
     div.className = "welcome";

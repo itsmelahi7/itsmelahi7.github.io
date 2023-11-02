@@ -258,11 +258,7 @@ input.filter-question {
     padding: 0px 10px;
 }
 
-.card-content .heading {
-    font-weight: 700;
-    background-color: inherit;
-    font-size: calc(var(--font-size) + 7px);
-}
+
 
 .card-content .text-content {
     background-color: white;
@@ -344,6 +340,12 @@ hr {
 
 }
 
+span.heading,
+textarea.heading {
+    font-size: calc(var(--font-size) + 6px);
+    font-weight: 700;
+    color: var(--header-bc);
+}
 
 .quick-question {
     background-color: white;
