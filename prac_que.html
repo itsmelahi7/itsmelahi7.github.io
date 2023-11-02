@@ -1,12 +1,13 @@
 <div class="page-content">
     <div class="topbar">
         <div class="search-section card">
-            <input type="search" id="search-card" class="search-input search-card add-card" placeholder="search or create note" />
+            <input type="search" id="search-card" class="search-input search-card add-card hide" placeholder="search or create note" />
         </div>
 
-        <img src="./assets/new_note.png" class="create-new-note" />
-
-        <button id="openMenu" class="menu-button">&#9776;</button>
+        <img src="./assets/new_note.png" class="create-new-note hide" />
+        <i class="fa-solid fa-magnifying-glass search icon"></i>
+        <i class="fa-regular fa-note-sticky create-new-note icon"></i>
+        <i class="fa-solid fa-calendar-week icon"></i>
     </div>
     <div class="card-section main hide"></div>
     <div class="question-section practise">
@@ -50,6 +51,14 @@
         <div class="main-content hide">
             <span class="hide"> The number shows the total number of questions linked with each tag.</span>
             <div class="all-tags"></div>
+        </div>
+    </div>
+
+    <div class="quick-question">
+        <textarea name="" id="" rows="1" placeholder="add quick question text"></textarea>
+        <div class="tag-section question tags">
+            <input type="text" class="add-tag question" placeholder="+ tag" inputmode="text" />
+            <button class="add-quick-question right">add</button>
         </div>
     </div>
     <div class="templates card-section hide always-hide">

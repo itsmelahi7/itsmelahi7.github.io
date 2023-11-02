@@ -159,10 +159,11 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () {
         setData();
         pageOpen();
-        tabMenu();
+        //tabMenu();
         searchCard();
         onLevelSelection();
         homeEventListners();
+        textareaAutoHeightSetting();
     }, 1000);
 
     //globalEventListner();
@@ -175,7 +176,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function homeEventListners() {
-    qs("img.create-new-note").addEventListener("click", (event) => {
+    qs(".create-new-note").addEventListener("click", (event) => {
+        debugger;
         createCard("");
     });
     qs(".back-home").addEventListener("click", toggleCardSection);
@@ -811,8 +813,9 @@ function openCard(cc) {
         loadCardQuestions();
     }
     setTimeout(function () {
-        triggerEventListners();
+        setCardEventListner();
     }, 1000);
+    textareaAutoHeightSetting();
 }
 
 function setTotalQuestions() {
@@ -941,6 +944,7 @@ function createQuestion(event) {
     div.querySelector("textarea").focus();
     setQuestionEventListners();
     setTotalQuestions();
+    textareaAutoHeightSetting();
 }
 
 function getNearestAncestorWithClass(element, className) {

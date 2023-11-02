@@ -5,7 +5,7 @@
     --body-bc: #a7acae;
     --card-bc: #ccd0ff;
     --header-color: #b3c7e9;
-    --page-bc: #efefef;
+    --page-bc: #06396B;
     --center-bc: #D6DFE7;
     --label-color: #cdcdcd;
     --font-color: #464039;
@@ -32,7 +32,7 @@
 }
 
 body {
-    background-color: var(--body-bc);
+    background-color: var(--page-bc);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -45,8 +45,11 @@ body .content header {
     display: flex;
     flex-wrap: wrap;
     align-content: center;
+    /* justify-content: center; */
+    align-items: center;
     color: var(--logo-color);
-    border-bottom: 5px solid var(--logo-color);
+    /* border-bottom: 5px solid var(--logo-color); */
+    background-color: white;
 }
 
 .logo {
@@ -59,10 +62,14 @@ body .content header {
     height: 35px;
 }
 
+.icon.menu {
+    margin-right: 20px;
+    font-size: 25px;
+}
+
 .header .app-name {
     font-size: 35px;
     margin: 0px;
-    margin-top: 10px;
 }
 
 .header .menu-button {
@@ -78,13 +85,6 @@ body .content header {
 }
 
 
-
-
-.page-content.main {
-    display: grid;
-    background-color: var(--page-bc);
-
-}
 
 .search-section.card {
     display: flex;
@@ -137,6 +137,18 @@ body .content header {
     display: flex;
     background-color: white;
     margin: 15px;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    padding: 0px 25px;
+}
+
+.topbar .icon {
+    font-size: 20px;
+    margin: 0px 7px;
+    color: var(--page-bc);
+    cursor: pointer;
 }
 
 .topbar button {
@@ -206,6 +218,7 @@ input.filter-question {
     border: none;
     border-radius: 21px;
     text-align: left;
+    background-color: inherit;
 }
 
 /* end */
@@ -330,6 +343,22 @@ hr {
     width: 90%;
 
 }
+
+
+.quick-question {
+    background-color: white;
+    padding: 0px 12px;
+    width: 100%;
+}
+
+button.add-quick-question {
+    background-color: var(--page-bc);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+}
+
+
 
 .column {
     display: grid;
@@ -847,10 +876,6 @@ body>.content {
 }
 
 
-.page-content {
-    background-color: inherit
-}
-
 
 
 body .content>header>h1 {
@@ -1289,7 +1314,10 @@ header nav {
 }
 
 .page-content {
-    padding: 10px;
+    background-color: inherit;
+    padding: 0px;
+
+
 }
 
 
@@ -1596,7 +1624,7 @@ body .hide {
 
 
 
-textarea.add-category {
+textarea {
     background-color: white;
 }
 
@@ -1715,9 +1743,11 @@ textarea.add-category {
 /* Style for the overlay */
 body>.content {
     position: relative;
-    background-color: #4158D0;
+    /*background-color: #4158D0;
     background-image: linear-gradient(43deg, #4158D0 0%, #ce42c3 22%, #50ceb1 49%, #5cc360 75%, #2d3bec 100%);
-    height: 100vh;
+    */
+    background-color: var(--page-bc);
+    display: 100vh;
 }
 
 
@@ -1772,7 +1802,7 @@ body>.content {
 
 @media screen and (max-width: 700px) {
     :root {
-        --font-size: 15px;
+        --font-size: 14px;
     }
 
     body>.content {
@@ -1785,11 +1815,6 @@ body>.content {
         margin-left: 0px;
     }
 
-
-    /* Test */
-    .page-content {
-        padding: 0px;
-    }
 
     .search-container {
         margin: 10px 15px;
@@ -1986,10 +2011,7 @@ textarea {
     border-radius: 5px;
 }
 
-textarea {
-    background-color: var(--page-bc);
 
-}
 
 
 
