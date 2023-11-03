@@ -7,66 +7,88 @@
         <i class="fa-solid fa-magnifying-glass search icon"></i>
         <i class="fa-regular fa-note-sticky create-new-note icon"></i>
         <i class="fa-solid fa-calendar-week daily-note icon"></i>
+        <i class="fa-regular fa-rectangle-list all-pages icon"></i>
+        <i class="fa-solid fa-bookmark bookmark icon"></i>
+        <i class="fa-solid fa-house home icon"></i>
     </div>
-    <div class="card-section main hide"></div>
-    <div class="question-section practise">
-        <div class="search-section filter-question tags">
-            <input type="search" id="search-tag" class="filter-question add-tag" placeholder="filter questions" />
+    <div class="page-container">
+        <div class="card-section card main hide">CARD</div>
+        <div class="all-pages-section all-pages main hide">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Heading</th>
+                        <th>Links</th>
+                        <th>Images</th>
+                        <th>Questions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
         </div>
+        <div class="bookmark-section bookmark main hide">BOOKMARK</div>
+        <div class="home main">
+            <div class="question-section practise">
+                <div class="search-section filter-question tags">
+                    <input type="search" id="search-tag" class="filter-question add-tag" placeholder="filter questions" />
+                </div>
 
-        <span class="question text"></span>
-        <div class="question-level">
-            <div class="level hard">hard</div>
-            <div class="level medium">medium</div>
-            <div class="level easy">easy</div>
-        </div>
-        <button id="random" class="fas fa-random random"></button>
-    </div>
+                <span class="question text"></span>
+                <div class="question-level">
+                    <div class="level hard">hard</div>
+                    <div class="level medium">medium</div>
+                    <div class="level easy">easy</div>
+                </div>
+                <button id="random" class="fas fa-random random"></button>
+            </div>
 
-    <div class="task-section">
-        <div class="head-sec">
-            <div class="fa-solid fa-chevron-right"></div>
-            <div class="fa-solid fa-chevron-down caret hide"></div>
-            <div class="head-text caret row">
-                <h3>To-Do List</h3>
-                <img src="./assets/todolist.png" />
+            <div class="task-section">
+                <div class="head-sec">
+                    <div class="fa-solid fa-chevron-right"></div>
+                    <div class="fa-solid fa-chevron-down caret hide"></div>
+                    <div class="head-text caret row">
+                        <h3>To-Do List</h3>
+                        <img src="./assets/todolist.png" />
+                    </div>
+                </div>
+                <div class="content-sec hide">
+                    <input type="text" placeholder="Type task here and then enter" />
+                    <div class="all-tasks"></div>
+                </div>
+            </div>
+
+            <div class="all-tags-section">
+                <div class="head-sec">
+                    <div class="fa-solid fa-chevron-right"></div>
+                    <div class="fa-solid fa-chevron-down caret hide"></div>
+                    <div class="head-text caret row">
+                        <h3>All Tags</h3>
+                        <img src="./assets/tag.png" />
+                    </div>
+                </div>
+                <div class="main-content hide">
+                    <span class="hide"> The number shows the total number of questions linked with each tag.</span>
+                    <div class="all-tags"></div>
+                </div>
+            </div>
+
+            <div class="quick-question">
+                <textarea name="" id="" rows="1" placeholder="add quick question text"></textarea>
+                <div class="tag-section question tags">
+                    <input type="text" class="add-tag question" placeholder="+ tag" inputmode="text" />
+                    <button class="add-quick-question right">add</button>
+                </div>
             </div>
         </div>
-        <div class="content-sec hide">
-            <input type="text" placeholder="Type task here and then enter" />
-            <div class="all-tasks"></div>
-        </div>
     </div>
 
-    <div class="all-tags-section">
-        <div class="head-sec">
-            <div class="fa-solid fa-chevron-right"></div>
-            <div class="fa-solid fa-chevron-down caret hide"></div>
-            <div class="head-text caret row">
-                <h3>All Tags</h3>
-                <img src="./assets/tag.png" />
-            </div>
-        </div>
-        <div class="main-content hide">
-            <span class="hide"> The number shows the total number of questions linked with each tag.</span>
-            <div class="all-tags"></div>
-        </div>
-    </div>
-
-    <div class="quick-question">
-        <textarea name="" id="" rows="1" placeholder="add quick question text"></textarea>
-        <div class="tag-section question tags">
-            <input type="text" class="add-tag question" placeholder="+ tag" inputmode="text" />
-            <button class="add-quick-question right">add</button>
-        </div>
-    </div>
     <div class="templates card-section hide always-hide">
-        <i class="fa-solid fa-arrow-left back-home"></i>
+        <i class="fa-solid fa-arrow-left back-hom hide"></i>
         <div class="card-body">
             <div class="card-content">
                 <div class="head-sec">
                     <textarea class="heading" rows="1" placeholder="add heading">Hello World</textarea>
-                    <button id="delete" class="delete card">delete</button>
+                    <i class="fa-solid fa-ellipsis-vertical card-setting right"></i>
                 </div>
 
                 <div class="text-content">
@@ -78,12 +100,12 @@
                     <input type="text" class="add-tag" placeholder="+ tag" inputmode="text" />
                 </div>
                 <hr />
-                <div class="card-tabs hide">
+                <div class="card-tabs">
                     <div class="tab">Questions</div>
                     <div class="tab">Images</div>
                     <div class="tab">Links</div>
                 </div>
-                <div class="link-section section external-links">
+                <div class="link-section section external-links hide">
                     <div class="head-sec">
                         <div class="fa-solid fa-chevron-right"></div>
                         <div class="fa-solid fa-chevron-down caret hide"></div>
@@ -93,7 +115,7 @@
                     <div class="link-list main-content hide"></div>
                 </div>
                 <hr />
-                <div class="image-section section">
+                <div class="image-section section hide">
                     <div class="head-sec">
                         <div class="fa-solid fa-chevron-right"></div>
                         <div class="fa-solid fa-chevron-down caret hide"></div>
@@ -111,7 +133,7 @@
                 </div>
             </div>
 
-            <div class="question-section">
+            <div class="question-section hide">
                 <div class="personal-question section">
                     <div class="head-sec">
                         <div class="fa-solid fa-chevron-right"></div>

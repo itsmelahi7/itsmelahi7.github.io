@@ -1,4 +1,3 @@
-/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -201,8 +200,20 @@ function homeEventListners() {
         show(".topbar .search.icon");
         hide(".topbar .search-section");
     });
+    qs(".topbar .bookmark").addEventListener("click", (event) => {
+        //setBookmarkPages();
+        toggleSectionDisplay("bookmark");
+    });
+    qs(".topbar .all-pages").addEventListener("click", (event) => {
+        setAllCards();
+        toggleSectionDisplay("all-pages");
+    });
+    qs(".topbar .home").addEventListener("click", (event) => {
+        //setAllPages();
+        toggleSectionDisplay("home");
+    });
 
-    qs(".back-home").addEventListener("click", toggleCardSection);
+    //qs(".back-home").addEventListener("click", toggleSectionDisplay);
     qs("input.add-tag").addEventListener("click", (event) => {
         setAutoCompelete(event);
     });
@@ -292,6 +303,31 @@ function setData() {
 
 function setTaskUsingID(id) {}
 
+function setAllCards() {
+    var tableBody = document.getElementById("table-body");
+
+    // Iterate through qq.cards and populate the table
+    qq.cards.forEach(function (card) {
+        var row = document.createElement("tr");
+        var headingCell = document.createElement("td");
+        var linksCell = document.createElement("td");
+        var imagesCell = document.createElement("td");
+        var questionsCell = document.createElement("td");
+
+        headingCell.textContent = card.heading;
+        linksCell.textContent = card.links.length;
+        imagesCell.textContent = card.images.length;
+        questionsCell.textContent = card.questions.length;
+
+        row.appendChild(headingCell);
+        row.appendChild(linksCell);
+        row.appendChild(imagesCell);
+        row.appendChild(questionsCell);
+
+        tableBody.appendChild(row);
+    });
+}
+
 function searchCard() {
     const searchInput = document.querySelector(".search-card");
     const autocompleteOverlay = document.querySelector(".autocomplete-overlay");
@@ -365,7 +401,8 @@ function searchCard() {
 }
 
 function setCardEventListner() {
-    qs(".back-home").addEventListener("click", toggleCardSection);
+    //qs(".back-home").addEventListener("click", toggleSectionDisplay);
+    /*
     qs(".delete.card").addEventListener("click", (event) => {
         for (var i = 0; i < qq.cards.length; i++) {
             if (qq.cards[i].id == card.id) {
@@ -373,12 +410,13 @@ function setCardEventListner() {
                 break;
             }
         }
-        toggleCardSection();
+        toggleSectionDisplay("home");
         popupAlert("Note has been deleted");
         setTimeout(function () {
             removePopupAlert();
         }, 5000);
     });
+    */
     qs("textarea.heading").addEventListener("input", (event) => {
         card.heading = event.target.value;
         saveData();
@@ -572,11 +610,14 @@ function nextQuestion() {
     }
 }
 
-function toggleCardSection() {
-    qsa(".page-content > div").forEach((section) => {
-        section.classList.toggle("hide");
+function toggleSectionDisplay(section) {
+    qsa(".page-content .page-container > div").forEach((div) => {
+        if (!div.classList.contains(section)) {
+            div.classList.add("hide");
+        } else {
+            div.classList.remove("hide");
+        }
     });
-    show(".topbar");
 }
 
 function popupAlert(message) {
@@ -634,7 +675,7 @@ function onLevelSelection() {
     qsa(".question-level .level").forEach((level) => {
         level.addEventListener("click", (event) => {
             //que.level = level.textContent;
-            toggleCardSection();
+            toggleSectionDisplay("card");
             openCard();
         });
     });
@@ -828,7 +869,7 @@ function setEventListnersOnTagSection2() {
 
 function openCard(cc) {
     if (cc) card = cc;
-    if (qs(".card-section.hide")) toggleCardSection();
+    if (qs(".card-section.hide")) toggleSectionDisplay("card");
 
     qs(".card-section").innerHTML = getTemplate("card");
 
