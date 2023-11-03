@@ -239,6 +239,29 @@ input.filter-question {
     cursor: pointer;
 }
 
+.all-pages.main {
+    background-color: white;
+    margin: 15px;
+    padding: 10px;
+    height: 80vh;
+    overflow: scroll;
+}
+
+th {
+    padding: 10px;
+}
+
+.all-pages #table-body td {
+    text-align: center;
+    padding: 7px;
+    border: 1px solid gray;
+}
+
+.all-pages #table-body td.heading {
+    text-align: left;
+    cursor: pointer;
+}
+
 /* Card */
 .card__.main {
     width: auto;
@@ -249,7 +272,7 @@ input.filter-question {
     background-color: white;
 }
 
-.card-body .card-content {
+. .card-body .card-content {
     background-color: white;
     width: 100%;
     padding: 10px 10px 0px 10px;

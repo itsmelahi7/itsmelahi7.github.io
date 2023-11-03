@@ -207,6 +207,15 @@ function homeEventListners() {
     qs(".topbar .all-pages").addEventListener("click", (event) => {
         setAllCards();
         toggleSectionDisplay("all-pages");
+        qsa(".all-pages td.heading").forEach((td) => {
+            td.addEventListener("click", (event) => {
+                debugger;
+                var id = event.target.id;
+                var card = getCardByID(id);
+                openCard(card);
+                toggleSectionDisplay("card");
+            });
+        });
     });
     qs(".topbar .home").addEventListener("click", (event) => {
         //setAllPages();
@@ -305,11 +314,13 @@ function setTaskUsingID(id) {}
 
 function setAllCards() {
     var tableBody = document.getElementById("table-body");
-
+    tableBody.innerHTML = "";
     // Iterate through qq.cards and populate the table
     qq.cards.forEach(function (card) {
         var row = document.createElement("tr");
         var headingCell = document.createElement("td");
+        headingCell.className = "heading";
+        headingCell.id = card.id;
         var linksCell = document.createElement("td");
         var imagesCell = document.createElement("td");
         var questionsCell = document.createElement("td");
