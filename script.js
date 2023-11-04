@@ -1,4 +1,3 @@
-/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -148,6 +147,7 @@ var qq = {
     questions: [],
     today_questions: [],
     public_questions: [],
+    unlinked_questions: [],
 };
 var card = {};
 var fil_que = [];
@@ -750,6 +750,7 @@ function removePopupAlert() {
 }
 
 function showQuestion(text) {
+    qs("body > .content").style.backgroundColor = "";
     if (text) {
         qs("span.question").textContent = text;
         hide(".question-level");
@@ -767,6 +768,14 @@ function showQuestion(text) {
         level.addEventListener("click", function () {
             fil_que[que_no].level = level.textContent;
             saveData();
+            debugger;
+            if (level.textContent == "hard") {
+                qs("body > .content").style.backgroundColor = "#ff9eae99";
+            } else if (level.textContent == "easy") {
+                qs("body > .content").style.backgroundColor = "#beff9e99";
+            } else if (level.textContent == "medium") {
+                qs("body > .content").style.backgroundColor = "#ffa5004a";
+            }
             var card_id = fil_que[que_no].card_id;
             if (card_id != "") {
                 show(".open-note");
@@ -804,7 +813,7 @@ function getCardByID(id) {
 function updateTags(event) {
     loadAllTags();
     setTimeout(function () {
-        //setAllTags();
+        setAllTags();
     }, 1000);
 }
 var autocompleteList = document.createElement("div");
@@ -899,33 +908,8 @@ function loadAllTags() {
 }
 
 function setAllTags() {
-    return;
     var all_tags = qs(".all-tags");
-    const tagCounts = {};
 
-    // Iterate through qq.cards array
-    qq.cards.forEach((card) => {
-        // Get the tags associated with the card
-        const cardTags = card.tags;
-
-        // Iterate through qq.questions array
-        qq.questions.forEach((question) => {
-            // Check if the question is linked to the current card
-            if (question.card_id === card.id) {
-                // Iterate through the tags of the card and update tag counts
-                cardTags.forEach((tag) => {
-                    // Initialize the count if it doesn't exist
-                    if (!tagCounts[tag]) {
-                        tagCounts[tag] = 0;
-                    }
-
-                    // Increment the count for the current tag
-                    tagCounts[tag]++;
-                });
-            }
-        });
-    });
-    /*
     tags.forEach((tag) => {
         var i = 0;
         qq.cards.forEach((card) => {
@@ -939,12 +923,16 @@ function setAllTags() {
                 });
             }
         });
+        qq.unlinked_questions.forEach((que) => {
+            if (que.tags.includes(tag)) {
+                i = i + 1;
+            }
+        });
 
         var ttt = tag + " - " + i;
         addNewTag(ttt, "", "all tags");
         //all_tags.append(div);
     });
-    */
 }
 
 function setEventListnersOnQuestions() {

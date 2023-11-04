@@ -180,6 +180,11 @@ input.search-card::placeholder {
     font-size: 13px
 }
 
+
+.question-section .main-content {
+    width: 100%;
+}
+
 /* Question sec*/
 .question-section.practise,
 .card-body,
@@ -2129,6 +2134,7 @@ textarea.explanation {
     margin: 5px;
     border-radius: 5px;
     padding: 3px 7px;
+    cursor: pointer;
 }
 
 .level.hard {
