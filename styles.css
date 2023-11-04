@@ -823,6 +823,8 @@ h3 {
     flex-wrap: wrap;
     padding: 15px;
     gap: 5px;
+    height: 35vh;
+    overflow-y: scroll;
 }
 
 
@@ -2137,6 +2139,14 @@ textarea.explanation {
     cursor: pointer;
 }
 
+span.count {
+    color: white;
+    background-color: var(--header-bc);
+    border-radius: 23px;
+    padding: 4px 10px;
+    margin-left: 9px;
+}
+
 .level.hard {
     color: var(--hard);
 }
@@ -2586,8 +2596,27 @@ button#add {
     text-align: center;
 }
 
+
 .task.main {
     margin: 4px 10px;
+    width: 90%;
+    align-items: center;
+    display: flex;
+}
+
+.task.main span {
+    margin: 0px 4px;
+    width: 80%;
+    font-size: var(--font-size);
+}
+
+.task.main span.checked {
+    text-decoration: line-through;
+}
+
+.chk {
+
+    font-size: 20px;
 }
 
 .task.main input[type='text'] {
