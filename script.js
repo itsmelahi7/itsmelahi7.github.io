@@ -148,6 +148,7 @@ var qq = {
     today_questions: [],
     public_questions: [],
     unlinked_questions: [],
+    play: [],
 };
 var card = {};
 var fil_que = [];
@@ -1629,7 +1630,15 @@ function saveData() {
 function getData() {
     var data = getDataFromLocale("revise_app_data");
     if (data) {
-        qq = data;
+        var temp = data;
+
+        for (const prop in qq) {
+            if (!(prop in temp)) {
+                temp[prop] = qq[prop];
+            }
+            qq = temp;
+        }
+
         return;
     } else {
         setTimeout(function () {
