@@ -1,3 +1,4 @@
+/*
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -144,7 +145,9 @@ setTimeout(function () {
 var qq = {
     cards: [],
     tasks: [],
-    pages: [],
+    questions: [],
+    today_questions: [],
+    public_questions: [],
 };
 var card = {};
 var fil_que = [];
@@ -158,11 +161,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setTimeout(function () {
         setData();
-        pageOpen();
+        topbarEventListner();
+        homeEventListners();
+        //pageOpen();
         //tabMenu();
         searchCard();
-        onLevelSelection();
-        homeEventListners();
+        //onLevelSelection();
+
         textareaAutoHeightSetting();
     }, 1000);
 
@@ -184,12 +189,9 @@ function isDailyNoteExist(id) {
     return false;
 }
 
-function homeEventListners() {
-    qs(".daily-note").addEventListener("click", (event) => {
-        createCard("daily-note");
-    });
+function topbarEventListner() {
     qs(".create-new-note").addEventListener("click", (event) => {
-        createCard("Untitled");
+        createCard("New Note Heading");
     });
     qs(".topbar .search.icon").addEventListener("click", (event) => {
         hide(".topbar .search.icon");
@@ -209,7 +211,6 @@ function homeEventListners() {
         toggleSectionDisplay("all-pages");
         qsa(".all-pages td.heading").forEach((td) => {
             td.addEventListener("click", (event) => {
-                debugger;
                 var id = event.target.id;
                 var card = getCardByID(id);
                 openCard(card);
@@ -219,13 +220,20 @@ function homeEventListners() {
     });
     qs(".topbar .home").addEventListener("click", (event) => {
         //setAllPages();
+        //filter();
         toggleSectionDisplay("home");
     });
+}
 
+function homeEventListners() {
     //qs(".back-home").addEventListener("click", toggleSectionDisplay);
-    qs("input.add-tag").addEventListener("click", (event) => {
-        setAutoCompelete(event);
+
+    var date = getFormattedDates();
+    qs(".daily-note > h3 ").textContent = date[1];
+    qs(".daily-note").addEventListener("click", (event) => {
+        createCard("daily-note");
     });
+
     qsa(".caret").forEach((icon) => {
         icon.addEventListener("click", (event) => {
             var head_sec = getNearestAncestorWithClass(event.target, "head-sec");
@@ -256,6 +264,13 @@ function homeEventListners() {
         }
     });
     qs("button.random").addEventListener("click", nextQuestion);
+
+    qsa("input.add-tag").forEach((input) => {
+        input.addEventListener("click", (event) => {
+            setAutoCompelete(event);
+        });
+    });
+
     qs(".quick-question  .tags input").addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             var input = event.target;
@@ -270,44 +285,33 @@ function homeEventListners() {
         if (ta.value.trim() == "") {
             return;
         }
-        var tags = [];
+        var que = createQuestion();
+
+        que.text = ta.value.trim();
         qsa(".quick-question .tag-name").forEach((tag) => {
             tag = tag.textContent.trim().toLowerCase();
-            if (!tags.includes(tag)) {
-                tags.push(tag);
+            if (!que.tags.includes(tag)) {
+                que.tags.push(tag);
             }
         });
-
-        var new_question = {
-            id: getID(),
-            text: ta.value.trim(),
-            type: "",
-            answer: "",
-            card_id: "",
-            tags: tags,
-            level: "hard",
-            create_date: getTodayDate(),
-            update_date: getTodayDate(),
-            revision_date: getRevisiondate(0),
-        };
-        qq.quick_questions.push(new_question);
         saveData();
+
         ta.value = "";
-        qsa(".quick-question tag").forEach((tag) => {
-            tag.remove();
-        });
-        ta.focus();
         qsa(".quick-question .tag").forEach((tag) => {
             tag.remove();
         });
+        ta.focus();
     });
+    textareaAutoHeightSetting();
+    console.log("homeEventListner");
 }
 
 function setData() {
-    var cards = sortArrayInRandomOrder(qq.cards);
-    card = cards[0];
-    updateTags();
-    filter();
+    debugger;
+    if (qq.cards && qq.cards.length > 0) {
+        updateTags();
+        filter();
+    }
 }
 
 function setTaskUsingID(id) {}
@@ -410,28 +414,22 @@ function searchCard() {
         autocompleteOverlay.style.display = "none";
     });
 }
+var quill;
 
 function setCardEventListner() {
-    //qs(".back-home").addEventListener("click", toggleSectionDisplay);
-    /*
-    qs(".delete.card").addEventListener("click", (event) => {
-        for (var i = 0; i < qq.cards.length; i++) {
-            if (qq.cards[i].id == card.id) {
-                qq.cards.splice(i, 1);
-                break;
-            }
-        }
-        toggleSectionDisplay("home");
-        popupAlert("Note has been deleted");
-        setTimeout(function () {
-            removePopupAlert();
-        }, 5000);
+    var ele = qs("textarea.heading");
+    if (ele) {
+        ele.addEventListener("input", (event) => {
+            card.heading = event.target.value;
+            saveData();
+        });
+    }
+    qsa("input.add-tag").forEach((input) => {
+        input.addEventListener("click", (event) => {
+            setAutoCompelete(event);
+        });
     });
-    */
-    qs("textarea.heading").addEventListener("input", (event) => {
-        card.heading = event.target.value;
-        saveData();
-    });
+
     qs(".text-content textarea").addEventListener("input", (event) => {
         card.content = event.target.value;
         saveData();
@@ -442,9 +440,10 @@ function setCardEventListner() {
             addNewTag(tag, event, "card");
             event.target.value = "";
             event.target.focus();
-            //updateTags();
+            updateTags();
         }
     });
+    /*
     qsa(".card-body .caret").forEach((icon) => {
         icon.addEventListener("click", (event) => {
             var head_sec = getNearestAncestorWithClass(event.target, "head-sec");
@@ -453,12 +452,77 @@ function setCardEventListner() {
             head_sec.nextElementSibling.classList.toggle("hide");
         });
     });
+    */
     qs("button#add-link").addEventListener("click", addExternalLink);
     qs("button#add-image").addEventListener("click", getImageURL);
-    setQuestionEventListners();
 
+    qs(".card.main  .question.tags input").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            debugger;
+            var tag = event.target.value.trim();
+            addNewTag(tag, event, "question");
+            event.target.value = "";
+            event.target.focus();
+            //updateTags();
+        }
+    });
+    qs(".card.main button.add-question").addEventListener("click", (event) => {
+        debugger;
+        var ta = qs(".add-question-section textarea");
+        if (ta.value.trim() == "") {
+            return;
+        }
+        debugger;
+        var que = createQuestion(card.id);
+        que.text = ta.value.trim();
+        qsa(".add-question-section .tag-name").forEach((tag) => {
+            tag = tag.textContent;
+            if (!que.tags.includes(tag)) que.tags.push(tag);
+        });
+        saveData();
+        addQuestionInCards(que);
+        qsa(".add-question-section .tag").forEach((tag) => {
+            tag.remove();
+        });
+        ta.value = "";
+        ta.focus();
+    });
+    hide("button.ql-clean");
+    setQuestionEventListners();
     textareaAutoHeightSetting();
 }
+
+function addQuestionInCards(que) {
+    var div = createElement("div");
+    div.className = "question main";
+    div.id = que.id;
+    div.innerHTML = getTemplate("question");
+
+    div.querySelector("span").textContent = que.text;
+    var tags = div.querySelector(".tags");
+    que.tags.forEach((tag) => {
+        var div = createElement("div");
+        div.className = "tag";
+        div.textContent = tag;
+        tags.append(div);
+    });
+    div.children[1].addEventListener("click", (event) => {
+        debugger;
+        var id = event.target.parentElement.id;
+        var i = 0;
+        qsa(".card-body .question-list .question.main").forEach((que, index) => {
+            if (que.id == id) {
+                i = index;
+            }
+            div.remove();
+            card.questions = card.questions.filter((element, index) => index !== i);
+            saveData();
+        });
+    });
+    qs(".card-body .question-list").append(div);
+}
+
+var tttt = false;
 function setQuestionEventListners() {
     qs(".add-new-question").addEventListener("click", createQuestion);
     qsa(".question.main textarea").forEach((ta) => {
@@ -470,6 +534,8 @@ function setQuestionEventListners() {
             saveData();
         });
     });
+
+    /*
     qsa(".question.tags input").forEach((input) => {
         input.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
@@ -481,10 +547,43 @@ function setQuestionEventListners() {
             }
         });
     });
+    
+
     qsa(".delete.question").forEach((btn) => {
         btn.addEventListener("click", (event) => {
             var id = getNearestAncestorWithClass(event.target, "main").id;
             deleteQuestion(id);
+        });
+    });
+    */
+    qsa(".card.main .card-tabs .tab").forEach((tab) => {
+        tab.addEventListener("click", (event) => {
+            debugger;
+            /*
+            if (tttt) {
+                tttt = false;
+                return;
+            }
+            tttt = true;
+            */
+            event.stopPropagation(); // Add this line to stop event propagation
+            qsa(".card.main .card-tabs .tab").forEach((tt) => {
+                if (tt != event.target) tt.classList.remove("active");
+            });
+            event.target.classList.toggle("active");
+
+            qsa(".card.main .tab-section").forEach((tt) => {
+                tt.classList.add("hide");
+            });
+            if (event.target.classList.contains("active")) {
+                if (event.target.classList.contains("questions")) {
+                    qs(".card.main .question-section").classList.remove("hide");
+                } else if (event.target.classList.contains("images")) {
+                    qs(".card.main .image-section").classList.remove("hide");
+                } else if (event.target.classList.contains("links")) {
+                    qs(".card.main .link-section").classList.remove("hide");
+                }
+            }
         });
     });
 }
@@ -493,7 +592,7 @@ function deleteQuestion(id) {
     card.questions = card.questions.filter((que) => que.id !== id);
     qs(`#${id}`).remove();
     saveData();
-    setTotalQuestions();
+    updateQuestionCount();
 }
 
 function setQuestionUsingID(id) {
@@ -576,12 +675,14 @@ function loadPage(pageName) {
 }
 
 function filter() {
-    fil_que = [];
+    debugger;
     var tags = qsa(".search-section .tag-name");
+    var temp_arr = [];
+    fil_que = [];
     qq.cards.forEach((card) => {
         fil_que = fil_que.concat(card.questions);
     });
-    var temp_arr = [];
+
     if (tags.length != 0) {
         tags.forEach((tag) => {
             tag = tag.textContent;
@@ -597,11 +698,18 @@ function filter() {
             fil_que = temp_arr;
             temp_arr = [];
         });
-    }
 
-    fil_que = sortArrayInRandomOrder(fil_que);
+        tags.forEach((tag) => {
+            qq.unlinked_questions.forEach((que) => {
+                if (que.tags.includes(tag)) temp_arr.push(que);
+            });
+        });
+    }
+    fil_que = fil_que.concat(qq.unlinked_questions);
+
     que_no = 0;
     if (fil_que.length != 0) {
+        fil_que = sortArrayInRandomOrder(fil_que);
         showQuestion();
     } else {
         showQuestion("No Question Found");
@@ -650,25 +758,36 @@ function showQuestion(text) {
     }
     show(".question-level");
     show("button.random");
+    hide(".open-note");
+    hide(".link-note");
 
     qs("span.question").textContent = replaceTextWithMarkup(fil_que[que_no].text);
-    card = getCardByID(fil_que[que_no].card_id);
 
     qsa(".question-level .level").forEach((level) => {
         level.addEventListener("click", function () {
             fil_que[que_no].level = level.textContent;
-            if (level.textContent == "hard") {
-                //setBodyClass("body-hard");
-            } else if (level.textContent == "medium") {
-                // setBodyClass("body-medium");
-            } else if (level.textContent == "easy") {
-                // setBodyClass("body-easy");
-            }
-            hide(".que-sec .que-level");
             saveData();
-
-            openCard();
+            var card_id = fil_que[que_no].card_id;
+            if (card_id != "") {
+                show(".open-note");
+            } else {
+                show(".link-note");
+                popupAlert("question is not linked to any note");
+                setTimeout(function () {
+                    removePopupAlert();
+                }, 3000);
+            }
         });
+    });
+    qs(".open-note").addEventListener("click", (event) => {
+        var id = fil_que[que_no].card_id;
+        var card = getCardByID(id);
+        openCard(card);
+    });
+    qs(".link-note").addEventListener("click", (event) => {
+        var id = fil_que[que_no].card_id;
+        var card = getCardByID(id);
+        openCard(card);
     });
 }
 
@@ -682,20 +801,10 @@ function getCardByID(id) {
     return null;
 }
 
-function onLevelSelection() {
-    qsa(".question-level .level").forEach((level) => {
-        level.addEventListener("click", (event) => {
-            //que.level = level.textContent;
-            toggleSectionDisplay("card");
-            openCard();
-        });
-    });
-}
-
 function updateTags(event) {
     loadAllTags();
     setTimeout(function () {
-        setAllTags();
+        //setAllTags();
     }, 1000);
 }
 var autocompleteList = document.createElement("div");
@@ -703,15 +812,20 @@ autocompleteList.className = "autocomplete-list";
 document.body.append(autocompleteList);
 autocompleteList.style.position = "absolute";
 
-function selectAutoCompeleteInput(input, event, location) {
-    if (!input) {
-        // qsa("input").forEach((input, e) => {});
-    } else {
-        // setAutoCompelete(input, e, location);
-    }
+function selectAutoCompeleteInput(event) {
+    qsa("input.add-tag").forEach((input) => {
+        if (input.classList.contains("filter-question")) {
+            setAutoCompelete(event, input, "filter-question");
+        } else if (input.classList.contains("quick-question")) {
+            setAutoCompelete(event, input, "quick-question");
+        } else if (input.classList.contains("card")) {
+            setAutoCompelete(event, input, "quick-question");
+        }
+    });
 }
 
 function setAutoCompelete(event) {
+    debugger;
     var input = event.target;
     input.addEventListener("input", function () {
         var inputValue = input.value.toLowerCase();
@@ -728,7 +842,16 @@ function setAutoCompelete(event) {
             item.textContent = name;
 
             item.addEventListener("click", function () {
-                addNewTag(name, event, "filter-question");
+                if (event.target.classList.contains("filter-question")) {
+                    addNewTag(name, event, "filter-question");
+                } else if (event.target.classList.contains("quick-question")) {
+                    addNewTag(name, event, "quick");
+                } else if (event.target.classList.contains("card")) {
+                    addNewTag(name, event, "card");
+                } else if (event.target.classList.contains("new-question")) {
+                    addNewTag(name, event, "question");
+                }
+
                 input.value = "";
                 input.focus();
                 autocompleteList.classList.remove("active");
@@ -750,8 +873,59 @@ function setAutoCompelete(event) {
     });
 }
 
+function loadAllTags() {
+    const uniqueTags = new Set();
+    qq.cards.forEach((card) => {
+        card.tags.forEach((tag) => {
+            uniqueTags.add(tag);
+        });
+
+        var questions = card.questions;
+        questions.forEach((que) => {
+            que.tags.forEach((tag) => {
+                uniqueTags.add(tag);
+            });
+        });
+    });
+
+    var questions = qq.unlinked_questions;
+    questions.forEach((que) => {
+        que.tags.forEach((tag) => {
+            uniqueTags.add(tag);
+        });
+    });
+
+    tags = Array.from(uniqueTags);
+}
+
 function setAllTags() {
+    return;
     var all_tags = qs(".all-tags");
+    const tagCounts = {};
+
+    // Iterate through qq.cards array
+    qq.cards.forEach((card) => {
+        // Get the tags associated with the card
+        const cardTags = card.tags;
+
+        // Iterate through qq.questions array
+        qq.questions.forEach((question) => {
+            // Check if the question is linked to the current card
+            if (question.card_id === card.id) {
+                // Iterate through the tags of the card and update tag counts
+                cardTags.forEach((tag) => {
+                    // Initialize the count if it doesn't exist
+                    if (!tagCounts[tag]) {
+                        tagCounts[tag] = 0;
+                    }
+
+                    // Increment the count for the current tag
+                    tagCounts[tag]++;
+                });
+            }
+        });
+    });
+    /*
     tags.forEach((tag) => {
         var i = 0;
         qq.cards.forEach((card) => {
@@ -770,20 +944,7 @@ function setAllTags() {
         addNewTag(ttt, "", "all tags");
         //all_tags.append(div);
     });
-}
-function loadAllTags() {
-    const uniqueTags = new Set();
-    qq.cards.forEach((card) => {
-        card.tags.forEach((tag) => {
-            uniqueTags.add(tag);
-        });
-        card.questions.forEach((que) => {
-            que.tags.forEach((tag) => {
-                uniqueTags.add(tag);
-            });
-        });
-    });
-    tags = Array.from(uniqueTags);
+    */
 }
 
 function setEventListnersOnQuestions() {
@@ -809,7 +970,7 @@ function setEventListners() {
     qs("button#random").addEventListener("click", nextQuestion);
     qs(`button#add-new-que`).addEventListener("click", function (event) {
         createQuestion(event);
-        setTotalQuestions();
+        updateQuestionCount();
     });
 
     setContentSpanTextareaToggle();
@@ -833,14 +994,17 @@ function createCard(heading_text) {
         id = date[0];
         heading = date[1];
     }
+    if (heading_text == "empty") {
+        id = "empty";
+    }
     var new_card = {
         id: id != undefined ? id : getID(),
         heading: heading,
         content: "",
         tags: [],
         images: [],
-        links: [],
         questions: [],
+        links: [],
         create_date: getTodayDate(),
         update_date: getTodayDate(),
     };
@@ -883,11 +1047,6 @@ function openCard(cc) {
     if (qs(".card-section.hide")) toggleSectionDisplay("card");
 
     qs(".card-section").innerHTML = getTemplate("card");
-
-    //show(".card.main");
-    //setEventListners();
-    //hide(".que-sec");
-
     qs(".card-content textarea.heading").value = card.heading;
 
     if (card.id.indexOf("-") != -1) {
@@ -898,25 +1057,39 @@ function openCard(cc) {
     } else {
         qs("textarea.heading").focus();
     }
-    qs(".card-content .text-content textarea").value = card.content;
 
-    /*
-    qs(".card-content .text-content span").innerHTML = replaceTextWithMarkup(card.content);
-    if (card.content.trim() == "") {
-        hide(".card-content .text-content span");
-        show(".card-content .text-content textarea");
-        qs(".card-content .text-content textarea").focus();
-    } else {
-        show(".card-content .text-content span");
-        hide(".card-content .text-content textarea");
-    }
-    */
-    var tags_div = qs(".tags.card");
-    var tags_input_ele = qs(".card.tags input");
-    card.tags.forEach((tag) => {
-        addNewTag(tag, "", "card");
+    //qs(".card-content .text-content textarea").value = card.content;
+    debugger;
+    quill = new Quill("#editor-container", {
+        theme: "snow", // or 'bubble' if you prefer the bubble theme
     });
+    loadCardTags();
+    loadCardImages();
+    loadCardQuestions();
+    quill.root.innerHTML = card.content;
+    var intervalId = setInterval(() => {
+        var ele = qs(".card.main #editor-container");
+        if (ele) {
+            if (card.content === quill.root.innerHTML) return;
+            card.content = quill.root.innerHTML;
+            saveData();
+        } else {
+            clearInterval(intervalId);
+        }
+    }, 1000);
+    setCardEventListner();
+    textareaAutoHeightSetting();
+}
 
+function loadCardQuestions() {
+    if (card.questions.length == 0) return;
+    card.questions.forEach((que) => {
+        addQuestionInCards(que);
+    });
+    updateQuestionCount();
+}
+
+function loadCardImages() {
     card.images.forEach((url) => {
         var div = createElement("div");
         div.className = "image main";
@@ -931,7 +1104,7 @@ function openCard(cc) {
             var index = Array.from(parent.children).indexOf(child);
             card.images = card.images.filter((_, i) => i !== index);
             saveData();
-            setTotalImages();
+            updateImageCount();
             div.remove();
         });
         div.querySelector(".fa-copy").addEventListener("click", (event) => {
@@ -942,19 +1115,15 @@ function openCard(cc) {
             }, 3000);
         });
     });
-    setTotalImages();
+    updateImageCount();
+}
 
-    var que_list = qs(".question-list");
-    que_list.innerHTML = "";
-
-    setTotalQuestions();
-    if (card.questions.length != 0) {
-        loadCardQuestions();
-    }
-    setTimeout(function () {
-        setCardEventListner();
-    }, 1000);
-    textareaAutoHeightSetting();
+function loadCardTags() {
+    var tags_div = qs(".tags.card");
+    var tags_input_ele = qs(".card.tags input");
+    card.tags.forEach((tag) => {
+        addNewTag(tag, "", "card");
+    });
 }
 
 function getFormattedDates() {
@@ -987,11 +1156,11 @@ function getDayWithSuffix(day) {
             return day + "th";
     }
 }
-function setTotalQuestions() {
-    qs(".personal-question .head-text").textContent = `Questions (${card.questions.length})`;
+function updateQuestionCount() {
+    qs(".card-tabs .questions").textContent = `Questions ${card.questions.length}`;
 }
-function setTotalImages() {
-    qs(".image-section .head-text").textContent = `Images (${card.images.length})`;
+function updateImageCount() {
+    qs(".card-tabs .images").textContent = `Images ${card.images.length}`;
 }
 
 function triggerEventListners() {
@@ -1001,39 +1170,6 @@ function triggerEventListners() {
     textareaAutoHeightSetting();
     setEventListnersOnQuestions();
     setEventListnersOnTagSection();
-}
-
-function loadCardQuestions() {
-    var questions = card.questions;
-    var list = qs(".personal-question .question-list");
-    questions.forEach((que) => {
-        var div = createElement("div");
-        div.className = "question main";
-        div.id = que.id;
-        div.innerHTML = getTemplate("question");
-
-        div.querySelector("textarea").value = que.text;
-        list.append(div);
-
-        var tag_input = div.querySelector(".question.tags input");
-        var tags = div.querySelector(".question.tags");
-        que.tags.forEach((tag) => {
-            var div = addNewTag(tag, "", "question");
-            tags.insertBefore(div, tag_input);
-            div.children[1].addEventListener("click", (event) => {
-                div.remove();
-                deleteTag(tag, que.id);
-            });
-        });
-        return;
-        if (fil_que[que_no].id == que.id) {
-            div.style.backgroundColor = "var(--curr-que-bc)";
-            div.querySelector(".tag-sec").style.backgroundColor = "var(--curr-que-bc)";
-        }
-        list.append(div);
-        setEventListnersOnQuestions();
-        setEventListnersOnTagSection();
-    });
 }
 
 function createPage() {
@@ -1083,19 +1219,28 @@ function textareaAutoHeightSetting() {
     }
 }
 
-function createQuestion(event) {
+function createQuestion(card_id) {
     var new_question = {
         id: getID(),
         text: "",
         type: "",
         answer: "",
-        card_id: card.id,
+        card_id: card_id != undefined ? card_id : "",
         tags: [],
         level: "hard",
         create_date: getTodayDate(),
         update_date: getTodayDate(),
         revision_date: getRevisiondate(0),
     };
+    if (card_id) {
+        card.questions.push(new_question);
+        updateQuestionCount();
+    } else {
+        qq.unlinked_questions.push(new_question);
+    }
+    saveData();
+    return new_question;
+
     card.questions.unshift(new_question);
     //card.questions.push(new_question);
     saveData();
@@ -1111,8 +1256,8 @@ function createQuestion(event) {
     qs(".personal-question .question-list").insertBefore(div, first_que);
 
     div.querySelector("textarea").focus();
-    setQuestionEventListners();
-    setTotalQuestions();
+    //setQuestionEventListners();
+    //updateQuestionCount();
     textareaAutoHeightSetting();
 }
 
@@ -1164,7 +1309,7 @@ function saveImage(url) {
 
         div.children[0].src = image_url;
         removePopupAlert();
-        setTotalImages();
+        updateImageCount();
 
         qs(".image-list").append(div);
         if (qs(".image-list.hide")) {
@@ -1181,7 +1326,7 @@ function saveImage(url) {
             var index = Array.from(parent.children).indexOf(child);
             card.images = card.images.filter((_, i) => i !== index);
             saveData();
-            setTotalImages();
+            updateImageCount();
             div.remove();
         });
         div.querySelector(".fa-copy").addEventListener("click", (event) => {
@@ -1289,6 +1434,10 @@ function addNewTag(tag, event, from) {
         if (event != "") {
             var tags = event.target.parentElement;
             tags.insertBefore(div, event.target);
+            div.children[1].addEventListener("click", (event) => {
+                div.remove();
+            });
+            return;
 
             var id = getNearestAncestorWithClass(event.target, "main").id;
             setQuestionUsingID(id);
@@ -1493,6 +1642,7 @@ function getData() {
     var data = getDataFromLocale("revise_app_data");
     if (data) {
         qq = data;
+        return;
     } else {
         setTimeout(function () {
             firsttime();
@@ -1510,6 +1660,7 @@ function firsttime() {
     div.append(btn);
     btn.addEventListener("click", (event) => {
         show(".page-content");
+        debugger;
         createCard("My First Note");
         div.remove();
     });

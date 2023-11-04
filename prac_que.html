@@ -6,9 +6,9 @@
 
         <i class="fa-solid fa-magnifying-glass search icon"></i>
         <i class="fa-regular fa-note-sticky create-new-note icon"></i>
-        <i class="fa-solid fa-calendar-week daily-note icon"></i>
-        <i class="fa-regular fa-rectangle-list all-pages icon"></i>
-        <i class="fa-solid fa-bookmark bookmark icon"></i>
+
+        <i class="fa-regular fa-rectangle-list all-pages hide icon"></i>
+        <i class="fa-solid fa-bookmark bookmark hide icon"></i>
         <i class="fa-solid fa-house home icon"></i>
     </div>
     <div class="page-container">
@@ -29,23 +29,46 @@
         <div class="bookmark-section bookmark main hide">BOOKMARK</div>
         <div class="home main">
             <div class="question-section practise">
-                <div class="search-section filter-question tags">
-                    <input type="search" id="search-tag" class="filter-question add-tag" placeholder="filter questions" />
+                <div class="head-sec row">
+                    <div class="fa-solid fa-chevron-right always-hide"></div>
+                    <div class="fa-solid fa-chevron-down caret hide always-hide"></div>
+                    <div class="head-text caret row">
+                        <h3>Questions</h3>
+                        <img src="./assets/question.png" />
+                    </div>
                 </div>
+                <div class="main-content">
+                    <div class="search-section filter-question tags">
+                        <input type="search" id="search-tag" class="filter-question add-tag" placeholder="filter questions" />
+                    </div>
 
-                <span class="question text"></span>
-                <div class="question-level">
-                    <div class="level hard">hard</div>
-                    <div class="level medium">medium</div>
-                    <div class="level easy">easy</div>
+                    <span class="question text"></span>
+                    <div class="question-level">
+                        <div class="level easy">easy</div>
+                        <div class="level medium">medium</div>
+                        <div class="level hard">hard</div>
+                    </div>
+                    <div class="row">
+                        <a class="open-note hide">open note</a>
+                        <a class="link-note hide">link with a note</a>
+                        <button id="random" class="fas fa-random right random"></button>
+                    </div>
                 </div>
-                <button id="random" class="fas fa-random random"></button>
+            </div>
+
+            <div class="task-section">
+                <div class="head-sec row">
+                    <div class="head-text daily-note row">
+                        <h3></h3>
+                        <img src="./assets/date.png" />
+                    </div>
+                </div>
             </div>
 
             <div class="task-section">
                 <div class="head-sec">
-                    <div class="fa-solid fa-chevron-right"></div>
-                    <div class="fa-solid fa-chevron-down caret hide"></div>
+                    <div class="fa-solid fa-chevron-righ always-hide"></div>
+                    <div class="fa-solid fa-chevron-down caret hide always-hide"></div>
                     <div class="head-text caret row">
                         <h3>To-Do List</h3>
                         <img src="./assets/todolist.png" />
@@ -58,9 +81,9 @@
             </div>
 
             <div class="all-tags-section">
-                <div class="head-sec">
-                    <div class="fa-solid fa-chevron-right"></div>
-                    <div class="fa-solid fa-chevron-down caret hide"></div>
+                <div class="head-sec row">
+                    <div class="fa-solid fa-chevron-right always-hide"></div>
+                    <div class="fa-solid fa-chevron-down caret hide always-hide"></div>
                     <div class="head-text caret row">
                         <h3>All Tags</h3>
                         <img src="./assets/tag.png" />
@@ -73,9 +96,9 @@
             </div>
 
             <div class="quick-question">
-                <textarea name="" id="" rows="1" placeholder="add quick question text"></textarea>
+                <textarea name="" id="" rows="1" placeholder="add quick question"></textarea>
                 <div class="tag-section question tags">
-                    <input type="text" class="add-tag question" placeholder="+ tag" inputmode="text" />
+                    <input type="text" class="add-tag quick-question question" placeholder="+ tag" inputmode="text" />
                     <button class="add-quick-question right">add</button>
                 </div>
             </div>
@@ -90,39 +113,39 @@
                     <textarea class="heading" rows="1" placeholder="add heading">Hello World</textarea>
                     <i class="fa-solid fa-ellipsis-vertical card-setting right"></i>
                 </div>
-
-                <div class="text-content">
+                <div id="editor-container"></div>
+                <div class="text-content hide">
                     <span class="hide"></span>
-                    <textarea class="" placeholder="Add some text">Hello World Hello World Hello World Hello World Hello World Hello World</textarea>
+                    <textarea class="" placeholder="Add some text">nothing</textarea>
                 </div>
 
                 <div class="tag-section section card tags">
-                    <input type="text" class="add-tag" placeholder="+ tag" inputmode="text" />
+                    <input type="text" class="add-tag card" placeholder="+ tag" inputmode="text" />
                 </div>
-                <hr />
+
                 <div class="card-tabs">
-                    <div class="tab">Questions</div>
-                    <div class="tab">Images</div>
-                    <div class="tab">Links</div>
+                    <div class="questions tab">Questions</div>
+                    <div class="images tab">Images</div>
+                    <div class="links tab">Links</div>
                 </div>
-                <div class="link-section section external-links hide">
+                <div class="link-section tab-section external-links hide">
                     <div class="head-sec">
-                        <div class="fa-solid fa-chevron-right"></div>
+                        <div class="fa-solid fa-chevron-right hide"></div>
                         <div class="fa-solid fa-chevron-down caret hide"></div>
-                        <div class="head-text caret">Links</div>
+                        <div class="head-text caret hide">Links</div>
                         <button id="add-link" class="add-link right">add link</button>
                     </div>
-                    <div class="link-list main-content hide"></div>
+                    <div class="link-list main-content"></div>
                 </div>
-                <hr />
-                <div class="image-section section hide">
+
+                <div class="image-section tab-section section hide">
                     <div class="head-sec">
-                        <div class="fa-solid fa-chevron-right"></div>
+                        <div class="fa-solid fa-chevron-right hide"></div>
                         <div class="fa-solid fa-chevron-down caret hide"></div>
-                        <div class="head-text caret">Images</div>
+                        <div class="head-text caret hide">Images</div>
                         <button id="add-image" class="add-image right">add image</button>
                     </div>
-                    <div class="image-list main-content hide"></div>
+                    <div class="image-list main-content"></div>
                 </div>
             </div>
             <div class="image-template main hide">
@@ -133,17 +156,24 @@
                 </div>
             </div>
 
-            <div class="question-section hide">
+            <div class="question-section tab-section hide">
                 <div class="personal-question section">
                     <div class="head-sec">
-                        <div class="fa-solid fa-chevron-right"></div>
+                        <div class="fa-solid fa-chevron-right hide"></div>
                         <div class="fa-solid fa-chevron-down caret hide"></div>
-                        <div class="head-text caret">Questions</div>
-                        <button id="add-new-question" class="add-new-question add right">add question</button>
+                        <div class="head-text caret hide">Questions</div>
+                        <div class="add-question-section">
+                            <textarea name="" id="" rows="1" placeholder="add add-question text"></textarea>
+                            <div class="tag-section question tags">
+                                <input type="text" class="add-tag new-question question" placeholder="+ tag" inputmode="text" />
+                                <button class="add-question right">add</button>
+                            </div>
+                        </div>
+                        <button id="add-new-question" class="add-new-question add hide right">add question</button>
                     </div>
-                    <div class="main-content question-list hide"></div>
+                    <div class="main-content question-list"></div>
                 </div>
-                <hr />
+
                 <div class="public-question section hide">
                     <div class="head-sec">
                         <div class="fa-solid fa-chevron-right"></div>
@@ -167,21 +197,9 @@
         </div>
 
         <div class="question-template question main hide">
-            <textarea rows="1" class="question" placeholder="add question"></textarea>
-
-            <div class="question mcq-answer-options hide">
-                <label class="">Correct option: </label>
-                <select class="hide mcq">
-                    <option>a</option>
-                    <option>b</option>
-                    <option>c</option>
-                    <option>d</option>
-                </select>
-            </div>
-            <div class="tag-section question tags">
-                <input type="text" class="add-tag question" placeholder="+ tag" inputmode="text" />
-                <button id="delete" class="delete question right">delete</button>
-            </div>
+            <span class="question"></span>
+            <i class="fa-solid fa-xmark icon"></i>
+            <div class="tag-section question tags"></div>
         </div>
     </div>
 </div>

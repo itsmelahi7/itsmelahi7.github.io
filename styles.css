@@ -3,9 +3,11 @@
     --logo-color: #005BA1;
     --header-bc: #064199;
     --body-bc: #75787a;
+    --top-icon-color: #272485;
     --card-bc: #ccd0ff;
     --header-color: #b3c7e9;
-    --page-bc: #06396B;
+    --page-bc: #b9b8b8;
+    /* #06396B;*/
     --center-bc: #D6DFE7;
     --label-color: #cdcdcd;
     --font-color: #464039;
@@ -16,14 +18,14 @@
     --category-color: #36549d;
     --category-bc: #8cabd947;
     --hard: #cb4040;
-    --medium: #598de5;
+    --medium: #FF9C00;
     --easy: #59b148;
     --que-color: #464039;
 }
 
 @media screen and (max-width: 700px) {
     :root {
-        --body-bc: #EEF4F7;
+        --body-bc: var(--page-bc);
     }
 }
 
@@ -65,11 +67,14 @@ body .content header {
 .icon.menu {
     margin-right: 20px;
     font-size: 25px;
+    color: black;
 }
 
 .header .app-name {
     font-size: 30px;
     margin: 0px;
+    margin-bottom: 7px;
+    color: black;
 }
 
 .header .menu-button {
@@ -115,6 +120,7 @@ body .content header {
 
 .tags input {
     border: none;
+    margin: 0px;
 }
 
 .always-hide {
@@ -136,18 +142,20 @@ body .content header {
 .topbar {
     display: flex;
     background-color: white;
-    margin-bottom: 15px;
-    /* border-radius: 5px; */
+    margin: 0px;
+    border-radius: 0px;
     justify-content: center;
     align-items: center;
-    /* height: 50px; */
+    height: 35px;
     padding: 7px;
+    border-bottom: 1px solid gray;
+    padding-bottom: 11px;
 }
 
 .topbar .icon {
     font-size: 20px;
     margin: 0px 7px;
-    color: var(--page-bc);
+    color: var(--top-icon-color);
     cursor: pointer;
 }
 
@@ -158,7 +166,9 @@ body .content header {
 
 .topbar .sesearch-section {}
 
-
+.question-section .head-sec img {
+    width: 70px;
+}
 
 input.search-card:focus {
     outline: auto;
@@ -180,7 +190,6 @@ input.search-card::placeholder {
     border: 0px solid gray;
     border-radius: 7px;
     margin: 15px;
-    margin-top: 0px;
     padding: 10px;
     background-color: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
@@ -188,6 +197,9 @@ input.search-card::placeholder {
 
 .card-body {
     padding: 0px;
+    padding-bottom: 20px;
+    margin: 0px;
+    border-radius: 0px;
 }
 
 
@@ -227,7 +239,7 @@ input.filter-question {
 .card-tabs {
     display: flex;
     padding: 10px;
-    margin-bottom: 20px;
+
 }
 
 .card-tabs .tab {
@@ -241,7 +253,7 @@ input.filter-question {
 
 .all-pages.main {
     background-color: white;
-    margin: 15px;
+    margin: 0px;
     padding: 10px;
     height: 80vh;
     overflow: scroll;
@@ -272,7 +284,7 @@ th {
     background-color: white;
 }
 
-. .card-body .card-content {
+.card-body .card-content {
     background-color: white;
     width: 100%;
     padding: 10px 10px 0px 10px;
@@ -280,7 +292,7 @@ th {
 }
 
 .card-body .question-section {
-    border-top: 1px solid gray;
+
     width: 100%;
     padding: 0px 10px;
 }
@@ -302,6 +314,13 @@ th {
     margin: 0px 6px;
     color: blue;
     cursor: pointer;
+}
+
+
+.card.main .card-tabs .tab.active {
+    padding-bottom: 7px;
+    color: blue;
+    font-weight: 600;
 }
 
 .question select {
@@ -327,6 +346,9 @@ hr {
 
 .row {
     display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -355,16 +377,43 @@ hr {
     padding: 5px
 }
 
-.question-list .question {
+
+
+.question-list .question.main {
     border-radius: 5px;
     background-color: #ebebeb;
-    margin: 10px 0px;
+    margin: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    /* justify-content: center; */
+    align-items: center;
 }
+
+.question-list .question.main span {
+    width: 90%;
+    /* margin: 7px; */
+    padding: 0px 10px;
+}
+
+.question-list .question.main .icon {
+    padding: 10px 0px;
+    font-size: 18px;
+}
+
 
 .question-list .question.main textarea {
     padding: 10px;
     width: 90%;
 
+}
+
+.question.tags {
+    padding: 7px;
+    margin: 0px;
+}
+
+.question .tags input {
+    margin: 0px;
 }
 
 span.heading,
@@ -374,22 +423,86 @@ textarea.heading {
     color: var(--header-bc);
 }
 
-.quick-question {
+button.ql-clean {
+    display: none !important;
+}
+
+.quick-question,
+.add-question-section {
     background-color: #d4d8ff;
-    padding: 12px;
-    /* width: 100%; */
+    padding: 3px 12px;
+
     margin: 15px;
     border-radius: 7px;
 }
 
-button.add-quick-question {
-    background-color: var(--page-bc);
+.add-question-section {
+    margin: 0px;
+    width: 100%;
+}
+
+.card-body {
+    padding-bottom: 20px;
+}
+
+button.add-quick-question,
+button.add-question {
+    background-color: #2f2323;
     color: white;
     padding: 6px 15px;
     border-radius: 20px;
 }
 
+.ql-toolbar.ql-snow+.ql-container.ql-snow {
+    border-top: 0px;
+    min-height: 100px;
+    border: none;
+    height: auto;
+    font-size: 17px;
+}
 
+.ql-snow .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) svg {
+    top: 130%;
+}
+
+.fa-xmark:before {
+    color: gray;
+}
+
+.ql-editor ol,
+.ql-editor ul {
+    padding-left: 1.2em;
+}
+
+.ql-editor li:not(.ql-direction-rtl)::before {
+    margin-left: -2em;
+    margin-right: 0.3em;
+    text-align: right;
+}
+
+.ql-editor ol li:not(.ql-direction-rtl),
+.ql-editor ul li:not(.ql-direction-rtl) {
+    padding-left: 1.2em em;
+}
+
+.ql-toolbar.ql-snow> :first-child {
+    padding-bottom: 20px;
+}
+
+.ql-toolbar.ql-snow .ql-formats {
+    margin-right: 0px;
+}
+
+.ql-formats button {
+    margin: 0px;
+}
+
+.ql-toolbar.ql-snow {
+    border: 0px solid #ccc;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    padding: 0px;
+}
 
 .column {
     display: grid;
@@ -512,7 +625,7 @@ button {
     display: flex;
 }
 
-button#random {
+button#random::before {
     margin-left: auto;
 }
 
@@ -670,13 +783,8 @@ span.bullet {
     flex-wrap: wrap;
 }
 
-.question .tags {
-    padding: 10px;
-}
 
-.question .tags input {
-    margin: 0px;
-}
+
 
 /**/
 
