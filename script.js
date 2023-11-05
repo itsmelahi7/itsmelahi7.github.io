@@ -1,3 +1,4 @@
+/* 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -558,18 +559,13 @@ function addQuestionInCards(que) {
     });
     div.children[1].addEventListener("click", (event) => {
         debugger;
-        var id = event.target.parentElement.id;
-        var i = 0;
-        qsa(".card-body .question-list .question.main").forEach((que, index) => {
-            if (que.id == id) {
-                i = index;
-            }
-            div.remove();
-            card.questions = card.questions.filter((element, index) => index !== i);
-            saveData();
-        });
+        var i = getElementPosition(event.target.parentElement);
+        card.questions.splice(i, 1);
+        div.remove();
+        saveData();
     });
     qs(".card-body .question-list").append(div);
+    updateQuestionCount();
 }
 
 var tttt = false;
@@ -812,7 +808,7 @@ function showQuestion(text) {
     hide(".open-note");
     hide(".link-note");
 
-    qs("span.question").textContent = replaceTextWithMarkup(fil_que[que_no].text);
+    qs("span.question").innerHTML = replaceTextWithMarkup(fil_que[que_no].text);
 
     qsa(".question-level .level").forEach((level) => {
         level.addEventListener("click", function () {
@@ -954,6 +950,13 @@ function loadAllTags() {
         });
     });
 
+    var questions = qq.nadira_que;
+    questions.forEach((que) => {
+        que.tags.forEach((tag) => {
+            uniqueTags.add(tag);
+        });
+    });
+
     tags = Array.from(uniqueTags);
 }
 
@@ -974,6 +977,11 @@ function setAllTags() {
             }
         });
         qq.unlinked_questions.forEach((que) => {
+            if (que.tags.includes(tag)) {
+                i = i + 1;
+            }
+        });
+        qq.nadira_que.forEach((que) => {
             if (que.tags.includes(tag)) {
                 i = i + 1;
             }
@@ -1894,4 +1902,66 @@ function embedVideo(videoId) {
 
             // Create a video player or display the video using the videoDetails.
         });
+}
+
+function updateNadiraData() {
+    qq.nadira_que = [];
+
+    qq.nadira.forEach((que) => {
+        var new_question = {
+            id: getID(),
+            text: que.question,
+            type: que.type,
+            answer: que.answer ? que.answer : "",
+            explanation: que.explanation,
+            card_id: "",
+            tags: que.categories
+                .split(",")
+                .map((item) => item.trim())
+                .filter((item) => item),
+            level: "hard",
+            create_date: getTodayDate(),
+            update_date: getTodayDate(),
+            revision_date: getRevisiondate(0),
+        };
+
+        qq.nadira_que.push(new_question);
+    });
+}
+
+const import_data = [];
+
+function importJsonFile() {
+    const fileInput = document.getElementById("jsonFileInput");
+
+    if (fileInput.files.length > 0) {
+        debugger;
+        const selectedFile = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            try {
+                // Parse the JSON content from the selected file
+                const fileContent = event.target.result;
+                const data = JSON.parse(fileContent);
+
+                // Check if the parsed data is an array
+                if (Array.isArray(data)) {
+                    // Add the data array to the import_data array
+                    import_data.push(...data);
+
+                    // You can now work with the imported data in the import_data array
+                    console.log("Imported Data:", import_data);
+                } else {
+                    console.error("The selected file does not contain a JSON array.");
+                }
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+            }
+        };
+
+        reader.readAsText(selectedFile);
+    } else {
+        console.error("No file selected.");
+    }
 }

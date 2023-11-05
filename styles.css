@@ -121,6 +121,8 @@ body .content header {
 .tags input {
     border: none;
     margin: 0px;
+    padding: 7px !important;
+    padding-left: 0px !important;
 }
 
 .always-hide {
@@ -823,7 +825,7 @@ h3 {
     flex-wrap: wrap;
     padding: 15px;
     gap: 5px;
-    height: 35vh;
+    max-height: 35vh;
     overflow-y: scroll;
 }
 

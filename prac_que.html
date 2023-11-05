@@ -10,6 +10,7 @@
         <i class="fa-regular fa-rectangle-list all-pages hide icon"></i>
         <i class="fa-solid fa-bookmark bookmark hide icon"></i>
         <i class="fa-solid fa-house home icon"></i>
+        <i class="fa-solid fa-download backup icon"></i>
     </div>
     <div class="page-container">
         <div class="card-section card main hide">CARD</div>
@@ -28,6 +29,8 @@
         </div>
         <div class="bookmark-section bookmark main hide">BOOKMARK</div>
         <div class="home main">
+            <input type="file" id="jsonFileInput" accept=".json" />
+            <button onclick="importJsonFile()">Import JSON File</button>
             <div class="question-section practise">
                 <div class="head-sec row">
                     <div class="fa-solid fa-chevron-right always-hide"></div>
@@ -71,7 +74,7 @@
                     <div class="fa-solid fa-chevron-down caret hide always-hide"></div>
                     <div class="head-text caret row">
                         <h3>To-Do List</h3>
-                        <img src="./assets/todolist.png" />
+                        <img src="./assets/task2.png" />
                         <span class="task-count count">0</span>
                     </div>
                 </div>
@@ -87,7 +90,7 @@
                     <div class="fa-solid fa-chevron-down caret hide always-hide"></div>
                     <div class="head-text caret row">
                         <h3>All Tags</h3>
-                        <img src="./assets/tag.png" />
+                        <img src="./assets/alltags.png" />
                     </div>
                 </div>
                 <div class="main-content hide">
