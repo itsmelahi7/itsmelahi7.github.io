@@ -366,6 +366,15 @@ hr {
     border-radius: 0px 0px 5px 5px;
 }
 
+
+.mobile-tab .row {
+    justify-content: left;
+}
+
+.mobile-tab .row i {
+    margin-right: 7px;
+}
+
 .card-content .text-content span,
 .card-content .text-content textarea {
     background-color: inherit;
@@ -2301,6 +2310,7 @@ button#random {
     float: right;
     font-size: 18px;
     color: gray;
+    margin-right: 10px;
 }
 
 .is-mcq {
