@@ -12,7 +12,88 @@
         <i class="fa-solid fa-house home icon"></i>
     </div>
     <div class="page-container">
-        <div class="card-section card main hide">CARD</div>
+        <div class="card-section card main hide">
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="head-sec">
+                        <textarea class="heading" rows="1" placeholder="add heading">Hello World</textarea>
+                        <span class="heading"></span>
+                        <i class="fa-solid fa-ellipsis-vertical card-setting hide right"></i>
+                    </div>
+                    <div id="editor-container"></div>
+                    <div class="text-content hide">
+                        <span class="hide"></span>
+                        <textarea class="" placeholder="Add some text">nothing</textarea>
+                    </div>
+
+                    <div class="tag-section section card tags">
+                        <input type="text" class="add-tag card" placeholder="+ tag" inputmode="text" />
+                    </div>
+
+                    <div class="card-tabs">
+                        <div class="questions tab">Questions</div>
+                        <div class="images tab">Images</div>
+                        <div class="links tab hide">Videos</div>
+                    </div>
+                    <div class="link-section tab-section external-links hide">
+                        <div class="head-sec">
+                            <div class="fa-solid fa-chevron-right hide"></div>
+                            <div class="fa-solid fa-chevron-down caret hide"></div>
+                            <div class="head-text caret hide">Links</div>
+                            <button id="add-link" class="add-link right">add youtube link</button>
+                        </div>
+                        <div class="link-list main-content"></div>
+                    </div>
+
+                    <div class="image-section tab-section section hide">
+                        <div class="head-sec">
+                            <div class="fa-solid fa-chevron-right hide"></div>
+                            <div class="fa-solid fa-chevron-down caret hide"></div>
+                            <div class="head-text caret hide">Images</div>
+                            <button id="add-image" class="add-image right">add image</button>
+                        </div>
+                        <div class="image-list main-content"></div>
+                    </div>
+                </div>
+                <div class="image-template main hide">
+                    <img />
+                    <div class="icons">
+                        <div class="fa-solid fa-trash"></div>
+                        <div class="fa-solid fa-copy"></div>
+                    </div>
+                </div>
+
+                <div class="question-section tab-section hide">
+                    <div class="personal-question section">
+                        <div class="head-sec">
+                            <div class="fa-solid fa-chevron-right hide"></div>
+                            <div class="fa-solid fa-chevron-down caret hide"></div>
+                            <div class="head-text caret hide">Questions</div>
+                            <div class="add-question-section">
+                                <textarea name="" id="" rows="1" placeholder="add add-question text"></textarea>
+                                <div class="tag-section question tags">
+                                    <input type="text" class="add-tag new-question question" placeholder="+ tag" inputmode="text" />
+                                    <button class="add-question right">add</button>
+                                </div>
+                            </div>
+                            <button id="add-new-question" class="add-new-question add hide right">add question</button>
+                        </div>
+                        <div class="main-content question-list"></div>
+                    </div>
+
+                    <div class="public-question section hide">
+                        <div class="head-sec">
+                            <div class="fa-solid fa-chevron-right"></div>
+                            <div class="fa-solid fa-chevron-down caret hide"></div>
+                            <div class="head-text">Public questions</div>
+                            <button id="add-new-question" class="add-new-question add right">add question</button>
+                        </div>
+                        <div class="main-content que-list hide"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="all-pages-section all-pages main hide">
             <table>
                 <thead>
@@ -49,9 +130,10 @@
                         <div class="level medium">medium</div>
                         <div class="level hard">hard</div>
                     </div>
+                    <div class="answer-options hide"></div>
                     <div class="row">
                         <a class="open-note hide">open note</a>
-                        <a class="link-note hide">link with a note</a>
+                        <a class="link-note hide">This question is not linked to any note. Click here to link this question with a note</a>
                         <button id="random" class="fas fa-random right random"></button>
                     </div>
                 </div>

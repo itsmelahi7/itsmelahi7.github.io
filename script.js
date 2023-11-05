@@ -148,7 +148,6 @@ var qq = {
     today_questions: [],
     public_questions: [],
     unlinked_questions: [],
-    play: [],
 };
 var card = {};
 var fil_que = [];
@@ -240,6 +239,18 @@ function homeEventListners() {
             head_sec.nextElementSibling.classList.toggle("hide");
         });
     });
+
+    qs(".filter.question").addEventListener("click", (event) => {
+        var input = qs("input.filter-question");
+        input.classList.remove("hide");
+        setAutoCompelete(event);
+        input.click();
+        input.focus();
+    });
+    qs("input.filter-question").addEventListener("blur", (event) => {
+        hide("input.filter-question");
+    });
+
     qs(".task-section input").addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             var input = event.target;
@@ -314,8 +325,10 @@ function homeEventListners() {
 }
 
 function setData() {
-    debugger;
     if (qq.cards && qq.cards.length > 0) {
+        updateTags();
+        filter();
+    } else if (qq.unlinked_questions && qq.unlinked_questions.length !== 0) {
         updateTags();
         filter();
     }
@@ -407,7 +420,7 @@ function searchCard() {
         const searchValue = searchInput.value.toLowerCase();
         const searchWords = searchValue.split(/\s+/); // Split search input into words
         const matchingCards = qq.cards.filter((card) => {
-            const cardText = card.heading.toLowerCase() + " " + card.content.toLowerCase();
+            const cardText = card.heading.toLowerCase();
             return searchWords.every((word) => cardText.includes(word));
         });
 
@@ -436,20 +449,20 @@ function searchCard() {
                 autocompleteList.appendChild(headingItem);
                 headingItem.addEventListener("click", (event) => {
                     card = getCardByID(card.id);
-                    openCard(card);
-                });
-            });
+                    if (link_note == true) {
+                        fil_que[que_no].card_id = card.id;
+                        card.questions.push(fil_que[que_no]);
+                        removeQuestion(fil_que[que_no].id);
+                        link_note = false;
+                        popupAlert(`Question has been linked to note "${card.heading}"`);
+                        setTimeout(function () {
+                            removePopupAlert();
+                        }, 4000);
 
-            // Add matching card content
-            matchingCards.forEach((card) => {
-                const contentItem = document.createElement("li");
-                contentItem.textContent = card.content;
-                contentItem.className = "search-item content";
-                contentItem.dataset.id = card.id;
-                autocompleteList.appendChild(contentItem);
-                contentItem.addEventListener("click", (event) => {
-                    card = getCardByID(card.id);
-                    openCard(card);
+                        isQuestionLinked();
+                    } else {
+                        openCard(card);
+                    }
                 });
             });
 
@@ -468,25 +481,40 @@ function searchCard() {
         autocompleteOverlay.style.display = "none";
     });
 }
+function removeQuestion(id) {
+    const indexToRemove = qq.unlinked_questions.findIndex((obj) => obj.id === id);
+
+    if (indexToRemove !== -1) {
+        qq.unlinked_questions.splice(indexToRemove, 1);
+        saveData();
+    }
+}
+
 var quill;
 
-function setCardEventListner() {
-    var ele = qs("textarea.heading");
-    if (ele) {
-        ele.addEventListener("input", (event) => {
-            card.heading = event.target.value;
-            saveData();
-        });
+function cardHeading() {
+    show(".card-content textarea.heading");
+    hide(".card-content span.heading");
+    qs(".card-content textarea.heading").value = card.heading;
+    qs("textarea.heading").addEventListener("input", (event) => {
+        card.heading = event.target.value;
+        saveData();
+    });
+
+    if (card.id.indexOf("-") != -1) {
+        hide(".card-content textarea.heading");
+        show(".card-content span.heading");
+        qs(".card-content span.heading").textContent = card.heading;
+    } else {
+        //qs(".card-content textarea.heading").focus();
     }
+}
+
+function setCardEventListner() {
     qsa("input.add-tag").forEach((input) => {
         input.addEventListener("click", (event) => {
             setAutoCompelete(event);
         });
-    });
-
-    qs(".text-content textarea").addEventListener("input", (event) => {
-        card.content = event.target.value;
-        saveData();
     });
     qs(".card.tags input").addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
@@ -497,22 +525,14 @@ function setCardEventListner() {
             updateTags();
         }
     });
-    /*
-    qsa(".card-body .caret").forEach((icon) => {
-        icon.addEventListener("click", (event) => {
-            var head_sec = getNearestAncestorWithClass(event.target, "head-sec");
-            head_sec.children[0].classList.toggle("hide");
-            head_sec.children[1].classList.toggle("hide");
-            head_sec.nextElementSibling.classList.toggle("hide");
-        });
+    quill = new Quill("#editor-container", {
+        theme: "snow", // or 'bubble' if you prefer the bubble theme
     });
-    */
     qs("button#add-link").addEventListener("click", addExternalLink);
     qs("button#add-image").addEventListener("click", getImageURL);
 
     qs(".card.main  .question.tags input").addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
-            debugger;
             var tag = event.target.value.trim();
             addNewTag(tag, event, "question");
             event.target.value = "";
@@ -521,12 +541,11 @@ function setCardEventListner() {
         }
     });
     qs(".card.main button.add-question").addEventListener("click", (event) => {
-        debugger;
         var ta = qs(".add-question-section textarea");
         if (ta.value.trim() == "") {
             return;
         }
-        debugger;
+
         var que = createQuestion(card.id);
         que.text = ta.value.trim();
         qsa(".add-question-section .tag-name").forEach((tag) => {
@@ -541,7 +560,26 @@ function setCardEventListner() {
         ta.value = "";
         ta.focus();
     });
-    hide("button.ql-clean");
+    /*
+    if (ele) {
+        ele.addEventListener("input", (event) => {
+            card.heading = event.target.value;
+            saveData();
+        });
+    }
+    */
+
+    /*
+    qsa(".card-body .caret").forEach((icon) => {
+        icon.addEventListener("click", (event) => {
+            var head_sec = getNearestAncestorWithClass(event.target, "head-sec");
+            head_sec.children[0].classList.toggle("hide");
+            head_sec.children[1].classList.toggle("hide");
+            head_sec.nextElementSibling.classList.toggle("hide");
+        });
+    });
+    */
+
     setQuestionEventListners();
     textareaAutoHeightSetting();
 }
@@ -552,7 +590,7 @@ function addQuestionInCards(que) {
     div.id = que.id;
     div.innerHTML = getTemplate("question");
 
-    div.querySelector("span").textContent = que.text;
+    div.querySelector("span").innerHTML = replaceTextWithMarkup(que.text);
     var tags = div.querySelector(".tags");
     que.tags.forEach((tag) => {
         var div = createElement("div");
@@ -561,7 +599,6 @@ function addQuestionInCards(que) {
         tags.append(div);
     });
     div.children[1].addEventListener("click", (event) => {
-        debugger;
         var i = getElementPosition(event.target.parentElement);
         card.questions.splice(i, 1);
         div.remove();
@@ -574,6 +611,7 @@ function addQuestionInCards(que) {
 var tttt = false;
 function setQuestionEventListners() {
     qs(".add-new-question").addEventListener("click", createQuestion);
+    /*
     qsa(".question.main textarea").forEach((ta) => {
         ta.addEventListener("input", (event) => {
             var ta = event.target;
@@ -607,7 +645,6 @@ function setQuestionEventListners() {
     */
     qsa(".card.main .card-tabs .tab").forEach((tab) => {
         tab.addEventListener("click", (event) => {
-            debugger;
             /*
             if (tttt) {
                 tttt = false;
@@ -698,7 +735,12 @@ function importData() {
             try {
                 const jsonData = JSON.parse(e.target.result);
                 qq = jsonData; // Assign the parsed JSON object to qq
+
+                saveData();
+                setData();
+                closeTabOverlay();
                 alert("Data imported successfully.");
+
                 console.log(qq); // You can log the imported data to the console
             } catch (error) {
                 alert("Error parsing JSON data. Please select a valid JSON file.");
@@ -785,7 +827,7 @@ function loadPage(pageName) {
             loadTasks();
             topbarEventListner();
             homeEventListners();
-
+            setCardEventListner();
             searchCard();
 
             textareaAutoHeightSetting();
@@ -794,13 +836,13 @@ function loadPage(pageName) {
 }
 
 function filter() {
-    debugger;
     var tags = qsa(".search-section .tag-name");
     var temp_arr = [];
     fil_que = [];
     qq.cards.forEach((card) => {
         fil_que = fil_que.concat(card.questions);
     });
+    fil_que = fil_que.concat(qq.unlinked_questions);
 
     if (tags.length != 0) {
         tags.forEach((tag) => {
@@ -808,23 +850,21 @@ function filter() {
 
             fil_que.forEach((que) => {
                 var card = getCardByID(que.card_id);
-                if (card.tags.includes(tag)) {
-                    temp_arr.push(que);
-                } else if (que.tags.includes(tag)) {
-                    temp_arr.push(que);
+                if (card != null) {
+                    if (card.tags.includes(tag)) {
+                        temp_arr.push(que);
+                    } else if (que.tags.includes(tag)) {
+                        temp_arr.push(que);
+                    }
+                } else {
+                    if (que.tags.includes(tag)) temp_arr.push(que);
                 }
             });
             fil_que = temp_arr;
             temp_arr = [];
         });
-
-        tags.forEach((tag) => {
-            qq.unlinked_questions.forEach((que) => {
-                if (que.tags.includes(tag)) temp_arr.push(que);
-            });
-        });
     }
-    fil_que = fil_que.concat(qq.unlinked_questions);
+    //fil_que = fil_que.concat(qq.unlinked_questions);
 
     que_no = 0;
     if (fil_que.length != 0) {
@@ -880,45 +920,40 @@ function showQuestion(text) {
     show("button.random");
     hide(".open-note");
     hide(".link-note");
+    hide(".answer-options");
 
-    qs("span.question").innerHTML = replaceTextWithMarkup(fil_que[que_no].text);
+    qs("span.question.text").innerHTML = replaceTextWithMarkup(fil_que[que_no].text);
+    if (fil_que[que_no].type == "mcq") {
+        addOptionButtons();
+    } else {
+        qsa(".question-level .level").forEach((level) => {
+            level.addEventListener("click", function () {
+                fil_que[que_no].level = level.textContent;
+                saveData();
 
-    qsa(".question-level .level").forEach((level) => {
-        level.addEventListener("click", function () {
-            fil_que[que_no].level = level.textContent;
-            saveData();
-            debugger;
-            if (level.textContent == "hard") {
-                qs("body > .content").style.backgroundColor = "#ff9eae99";
-            } else if (level.textContent == "easy") {
-                qs("body > .content").style.backgroundColor = "#beff9e99";
-            } else if (level.textContent == "medium") {
-                qs("body > .content").style.backgroundColor = "#ffa5004a";
-            }
-            var card_id = fil_que[que_no].card_id;
-            if (card_id != "") {
-                show(".open-note");
-            } else {
-                show(".link-note");
-                popupAlert("question is not linked to any note");
-                setTimeout(function () {
-                    removePopupAlert();
-                }, 3000);
-            }
+                if (level.textContent == "hard") {
+                    qs("body > .content").style.backgroundColor = "#ff9eae99";
+                } else if (level.textContent == "easy") {
+                    qs("body > .content").style.backgroundColor = "#beff9e99";
+                } else if (level.textContent == "medium") {
+                    qs("body > .content").style.backgroundColor = "#ffa5004a";
+                }
+                isQuestionLinked();
+            });
         });
-    });
+    }
+
     qs(".open-note").addEventListener("click", (event) => {
         var id = fil_que[que_no].card_id;
         var card = getCardByID(id);
         openCard(card);
     });
     qs(".link-note").addEventListener("click", (event) => {
-        var id = fil_que[que_no].card_id;
-        var card = getCardByID(id);
-        openCard(card);
+        link_note = true;
+        qs(".topbar .search.icon").click();
     });
 }
-
+var link_note = false;
 function getCardByID(id) {
     for (let i = 0; i < qq.cards.length; i++) {
         if (qq.cards[i].id === id) {
@@ -927,6 +962,20 @@ function getCardByID(id) {
     }
     // Return null if the card with the specified ID is not found
     return null;
+}
+
+function isQuestionLinked() {
+    var card_id = fil_que[que_no].card_id;
+    if (card_id != "") {
+        show(".open-note");
+        hide(".link-note");
+    } else {
+        show(".link-note");
+        popupAlert("question is not linked to any note");
+        setTimeout(function () {
+            removePopupAlert();
+        }, 3000);
+    }
 }
 
 function updateTags(event) {
@@ -953,7 +1002,6 @@ function selectAutoCompeleteInput(event) {
 }
 
 function setAutoCompelete(event) {
-    debugger;
     var input = event.target;
     input.addEventListener("input", function () {
         var inputValue = input.value.toLowerCase();
@@ -1048,7 +1096,7 @@ function setAllTags() {
             }
         });
 
-        var ttt = tag + " - " + i;
+        var ttt = tag + " " + i;
         addNewTag(ttt, "", "all tags");
         //all_tags.append(div);
     });
@@ -1087,7 +1135,6 @@ function setEventListners() {
 }
 
 function createCard(heading_text) {
-    debugger;
     var heading = heading_text != undefined ? heading_text : "New card heading";
     var id;
     if (heading == "daily-note") {
@@ -1153,27 +1200,15 @@ function openCard(cc) {
     if (cc) card = cc;
     if (qs(".card-section.hide")) toggleSectionDisplay("card");
 
-    qs(".card-section").innerHTML = getTemplate("card");
-    qs(".card-content textarea.heading").value = card.heading;
+    cardHeading();
 
-    if (card.id.indexOf("-") != -1) {
-        var span = createElement("span");
-        span.className = "heading";
-        span.textContent = card.heading;
-        qs(".card-content textarea.heading").replaceWith(span);
-    } else {
-        qs("textarea.heading").focus();
-    }
-
-    //qs(".card-content .text-content textarea").value = card.content;
-    debugger;
-    quill = new Quill("#editor-container", {
-        theme: "snow", // or 'bubble' if you prefer the bubble theme
-    });
     loadCardTags();
     loadCardImages();
     loadCardQuestions();
+
     quill.root.innerHTML = card.content;
+    hide("button.ql-clean");
+
     var intervalId = setInterval(() => {
         var ele = qs(".card.main #editor-container");
         if (ele) {
@@ -1184,11 +1219,14 @@ function openCard(cc) {
             clearInterval(intervalId);
         }
     }, 1000);
-    setCardEventListner();
+
+    //setCardEventListner();
     textareaAutoHeightSetting();
 }
 
 function loadCardQuestions() {
+    qs(".question-list").innerHTML = "";
+    updateQuestionCount();
     if (card.questions.length == 0) return;
     card.questions.forEach((que) => {
         addQuestionInCards(que);
@@ -1197,6 +1235,7 @@ function loadCardQuestions() {
 }
 
 function loadCardImages() {
+    qs(".image-list").innerHTML = "";
     card.images.forEach((url) => {
         var div = createElement("div");
         div.className = "image main";
@@ -1226,8 +1265,10 @@ function loadCardImages() {
 }
 
 function loadCardTags() {
-    var tags_div = qs(".tags.card");
-    var tags_input_ele = qs(".card.tags input");
+    qsa(".card.tags .tag").forEach((tag) => {
+        tag.remove();
+    });
+
     card.tags.forEach((tag) => {
         addNewTag(tag, "", "card");
     });
@@ -1562,7 +1603,12 @@ function addNewTag(tag, event, from) {
         div.children[1].remove();
         qs(".all-tags").append(div);
         div.children[0].addEventListener("click", (event) => {
-            var tag = div.children[0].textContent.split("-")[0].trim();
+            var tag = div.children[0].textContent.trim();
+            const lastSpaceIndex = tag.lastIndexOf(" ");
+            if (lastSpaceIndex !== -1) {
+                tag = tag.substr(0, lastSpaceIndex);
+            }
+            debugger;
             addNewTag(tag, "all-tags", "filter-question");
             var ele = qs(".question-section .main-content.hide");
             if (ele) {
@@ -1649,6 +1695,40 @@ function addTagInDataArray(tag, event, div) {
     return false;
 }
 
+function addOptionButtons() {
+    var ans_opt = document.querySelector(".answer-options");
+    ans_opt.classList.remove("hide");
+    qs(".question-section .question-level").classList.add("hide");
+    ans_opt.innerHTML = `<span>Select the correct option:</span><div class="ans-opt-list">
+                        <input type="radio" class="a" name="option"><span> (a) </span>
+                        <input type="radio" class="b" name="option"><span> (b) </span>
+                        <input type="radio" class="c" name="option"><span> (c) </span>
+                        <input type="radio" class="d" name="option"><span> (d) </span>
+                        </div>
+                        <span class ="answer-message"></span>
+                        `;
+    var inputs = ans_opt.querySelectorAll("input").forEach((input) => {
+        input.addEventListener("click", (event) => {
+            checkAnswer(event);
+        });
+    });
+}
+
+function checkAnswer(event) {
+    var a = fil_que[que_no].answer;
+    var s = event.target.className;
+    var ele = document.querySelector(".answer-options .answer-message");
+    ele.className = "answer-message";
+    if (s == a) {
+        ele.classList.add("correct");
+        ele.textContent = "You have selected the right option.";
+    } else {
+        ele.classList.add("wrong");
+        ele.textContent = `Wrong answer!.. Correct option is (${a}) `;
+    }
+    isQuestionLinked();
+}
+
 function addExternalLink() {
     var div = createElement("div");
     div.className = "external-link main";
@@ -1701,16 +1781,12 @@ function copyToClipboard(text) {
 }
 
 function getTodayDate() {
-    const now = new Date();
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-based, so we add 1
+    const year = today.getFullYear();
 
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
-
-    return `${year}${month}${day}${hours}${minutes}${seconds}`;
+    return `${day}-${month}-${year}`;
 }
 
 function getCurrentcardID() {}
@@ -1780,7 +1856,7 @@ function firsttime() {
     div.append(btn);
     btn.addEventListener("click", (event) => {
         show(".page-content");
-        debugger;
+
         createCard("My First Note");
         div.remove();
     });
@@ -1963,4 +2039,27 @@ function embedVideo(videoId) {
 
             // Create a video player or display the video using the videoDetails.
         });
+}
+
+var nad = [];
+function updateNadiraData() {
+    nadira.forEach((que) => {
+        var new_question = {
+            id: getID(),
+            text: que.question,
+            type: que.type,
+            answer: que.answer ? que.answer : "",
+            explanation: que.explanation,
+            card_id: "",
+            tags: que.categories
+                .split(",")
+                .map((item) => item.trim())
+                .filter((item) => item),
+            level: "hard",
+            create_date: getTodayDate(),
+            update_date: getTodayDate(),
+            revision_date: getRevisiondate(0),
+        };
+        nad.push(new_question);
+    });
 }
