@@ -1,4 +1,3 @@
-/* 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-storage.js"; // Import Firebase Storage
@@ -159,20 +158,9 @@ var que, task;
 
 document.addEventListener("DOMContentLoaded", function () {
     getData();
+    pageOpen();
+    tabMenu();
     loadPage("prac_que");
-
-    setTimeout(function () {
-        setData();
-        loadTasks();
-        topbarEventListner();
-        homeEventListners();
-        //pageOpen();
-        //tabMenu();
-        searchCard();
-        //onLevelSelection();
-
-        textareaAutoHeightSetting();
-    }, 1000);
 });
 
 function setURL() {
@@ -292,6 +280,10 @@ function homeEventListners() {
         var que = createQuestion();
 
         que.text = ta.value.trim();
+        if (que.text.indexOf("(a)")) {
+            que.type = "mcq";
+            que.answer = qs(".quick-question select").value;
+        }
         qsa(".quick-question .tag-name").forEach((tag) => {
             tag = tag.textContent.trim().toLowerCase();
             if (!que.tags.includes(tag)) {
@@ -301,12 +293,23 @@ function homeEventListners() {
         saveData();
 
         ta.value = "";
+        qs(".quick-question .mcq-option ").classList.add("hide");
+        qs(".quick-question .is-mcq ").classList.remove("hide");
         qsa(".quick-question .tag").forEach((tag) => {
             tag.remove();
         });
         ta.focus();
+        textareaAutoHeightSetting();
     });
-    textareaAutoHeightSetting();
+    qs(".is-mcq").addEventListener("click", (event) => {
+        var par = event.target.parentElement;
+        par.querySelector("textarea").value = "question .. \n(a) \n(b) \n(c) \n(d)";
+        par.querySelector(".mcq-option").classList.remove("hide");
+        event.target.classList.add("hide");
+        par.querySelector("textarea").focus();
+        textareaAutoHeightSetting();
+    });
+
     console.log("homeEventListner");
 }
 
@@ -672,11 +675,72 @@ function pageOpen() {
     qs("button#about-me").addEventListener("click", function () {
         loadPage("about");
     });
-    qs("textarea.heading");
+    qs("button#backup").addEventListener("click", backupData);
+    qs("button#import").addEventListener("click", importData);
+}
+
+function importData() {
+    const importInput = document.createElement("input");
+    importInput.type = "file";
+    importInput.accept = ".json";
+
+    importInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+
+        if (!file) {
+            alert("No file selected.");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            try {
+                const jsonData = JSON.parse(e.target.result);
+                qq = jsonData; // Assign the parsed JSON object to qq
+                alert("Data imported successfully.");
+                console.log(qq); // You can log the imported data to the console
+            } catch (error) {
+                alert("Error parsing JSON data. Please select a valid JSON file.");
+            }
+        };
+
+        reader.readAsText(file);
+    });
+
+    // Trigger the file input dialog
+    importInput.click();
+}
+
+function backupData() {
+    // Convert the object to a JSON string
+    const json = JSON.stringify(qq);
+
+    // Get the current date and time
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[:T-]/g, "");
+
+    // Create a file name with the format "revise_data_yyyy_mm_dd_hh_mm_ss.json"
+    const fileName = `revise_data_${timestamp}.json`;
+
+    // Create a Blob object with the JSON data
+    const blob = new Blob([json], { type: "application/json" });
+
+    // Create a download link
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+
+    // Trigger a click event on the download link to initiate the download
+    a.click();
+
+    // Clean up by revoking the Blob URL
+    window.URL.revokeObjectURL(url);
 }
 
 function tabMenu() {
-    var menu_button = qs("#openMenu");
+    var menu_button = qs(".icon.menu");
     menu_button.addEventListener("click", function () {
         qs("#tabOverlay").style.right = "0";
         show("#tabOverlay");
@@ -716,7 +780,16 @@ function loadPage(pageName) {
         });
     closeTabOverlay();
     if (pageName == "prac_que") {
-        loadPracQueEventListners();
+        setTimeout(function () {
+            setData();
+            loadTasks();
+            topbarEventListner();
+            homeEventListners();
+
+            searchCard();
+
+            textareaAutoHeightSetting();
+        }, 1000);
     }
 }
 
@@ -950,13 +1023,6 @@ function loadAllTags() {
         });
     });
 
-    var questions = qq.nadira_que;
-    questions.forEach((que) => {
-        que.tags.forEach((tag) => {
-            uniqueTags.add(tag);
-        });
-    });
-
     tags = Array.from(uniqueTags);
 }
 
@@ -977,11 +1043,6 @@ function setAllTags() {
             }
         });
         qq.unlinked_questions.forEach((que) => {
-            if (que.tags.includes(tag)) {
-                i = i + 1;
-            }
-        });
-        qq.nadira_que.forEach((que) => {
             if (que.tags.includes(tag)) {
                 i = i + 1;
             }
@@ -1902,66 +1963,4 @@ function embedVideo(videoId) {
 
             // Create a video player or display the video using the videoDetails.
         });
-}
-
-function updateNadiraData() {
-    qq.nadira_que = [];
-
-    qq.nadira.forEach((que) => {
-        var new_question = {
-            id: getID(),
-            text: que.question,
-            type: que.type,
-            answer: que.answer ? que.answer : "",
-            explanation: que.explanation,
-            card_id: "",
-            tags: que.categories
-                .split(",")
-                .map((item) => item.trim())
-                .filter((item) => item),
-            level: "hard",
-            create_date: getTodayDate(),
-            update_date: getTodayDate(),
-            revision_date: getRevisiondate(0),
-        };
-
-        qq.nadira_que.push(new_question);
-    });
-}
-
-const import_data = [];
-
-function importJsonFile() {
-    const fileInput = document.getElementById("jsonFileInput");
-
-    if (fileInput.files.length > 0) {
-        debugger;
-        const selectedFile = fileInput.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function (event) {
-            try {
-                // Parse the JSON content from the selected file
-                const fileContent = event.target.result;
-                const data = JSON.parse(fileContent);
-
-                // Check if the parsed data is an array
-                if (Array.isArray(data)) {
-                    // Add the data array to the import_data array
-                    import_data.push(...data);
-
-                    // You can now work with the imported data in the import_data array
-                    console.log("Imported Data:", import_data);
-                } else {
-                    console.error("The selected file does not contain a JSON array.");
-                }
-            } catch (error) {
-                console.error("Error parsing JSON:", error);
-            }
-        };
-
-        reader.readAsText(selectedFile);
-    } else {
-        console.error("No file selected.");
-    }
 }

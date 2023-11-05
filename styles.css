@@ -687,14 +687,15 @@ button#random::before {
 
 .tag {
     margin: 2px 5px;
-    padding: 0px 7px;
+    padding: 2px 10px;
     color: var(--header-bc);
-    border: 1px solid var(--header-bc);
+    /* border: 1px solid var(--header-bc); */
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
     cursor: pointer;
     font-size: calc(var(--font-size) - 3px);
+    background-color: #eaeaea;
 }
 
 input[type="checkbox"] {
@@ -812,6 +813,17 @@ h2 {
     color: var(--header-bc);
     margin: 0px;
     font-size: calc(var(--font-size) + 7px);
+}
+
+/*about me */
+
+body>.content:has(.page-container > .about-me) {
+    background-color: white;
+}
+
+.row.social-media img {
+    width: 30px;
+    margin: 7px;
 }
 
 h3 {
@@ -1911,7 +1923,7 @@ body>.content {
 
     top: 0;
     right: -300px;
-    width: 60%;
+    width: 200px;
     height: 100%;
     background-color: var(--menu-overlay-bc);
     z-index: 1000;
@@ -2267,14 +2279,36 @@ button#random {
 }
 
 .about-me .text {
-    background-color: var(--center-bc);
+
     margin: 15px;
     padding: 15px;
     line-height: 1.5em;
     font-size: var(--font-size);
 }
 
+.quick-question label {
+    color: black;
+    text-decoration: none;
+}
 
+.quick-question select {
+    border: none;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+.filter.question {
+    float: right;
+    font-size: 18px;
+    color: gray;
+}
+
+.is-mcq {
+    padding: 7px;
+    font-size: 13px;
+    color: black;
+    text-align: right;
+}
 
 /* End about me page css*/
 
