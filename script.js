@@ -172,15 +172,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         textareaAutoHeightSetting();
     }, 1000);
-
-    //globalEventListner();
-    /*
-    const selectImageButton = document.getElementById("selectImage");
-    selectImageButton.addEventListener("click", function () {
-        ipcRenderer.send("select-and-copy-image");
-    });
-    */
 });
+
+function setURL() {
+    const baseUrl = "http://127.0.0.1:8080";
+    const path = "/username/my_space";
+    const fullUrl = baseUrl + path;
+    window.location.href = fullUrl;
+}
 
 function loadTasks() {
     console.log("addTasks()");
