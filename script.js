@@ -1076,7 +1076,7 @@ function loadAllTags() {
 
 function setAllTags() {
     var all_tags = qs(".all-tags");
-
+    all_tags.innerHTML = "";
     tags.forEach((tag) => {
         var i = 0;
         qq.cards.forEach((card) => {
@@ -1374,7 +1374,7 @@ function createQuestion(card_id) {
         type: "",
         answer: "",
         card_id: card_id != undefined ? card_id : "",
-        tags: [],
+        tags: getTodayDate(),
         level: "hard",
         create_date: getTodayDate(),
         update_date: getTodayDate(),
