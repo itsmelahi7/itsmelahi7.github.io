@@ -1374,12 +1374,13 @@ function createQuestion(card_id) {
         type: "",
         answer: "",
         card_id: card_id != undefined ? card_id : "",
-        tags: getTodayDate(),
+        tags: [],
         level: "hard",
         create_date: getTodayDate(),
         update_date: getTodayDate(),
         revision_date: getRevisiondate(0),
     };
+    new_question.tags.push(getTodayDate());
     if (card_id) {
         card.questions.push(new_question);
         updateQuestionCount();
