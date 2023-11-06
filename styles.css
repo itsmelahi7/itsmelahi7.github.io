@@ -424,6 +424,19 @@ hr {
 }
 
 
+.video-container {
+    margin: 10px 0px;
+}
+
+input.add-video {
+    padding: 10px;
+    background-color: #f2f2f2;
+    width: 100%;
+    text-align: center;
+    /* margin: 10px 15px; */
+    border: none;
+    border-radius: 20px;
+}
 
 .question-list .question.main {
     border-radius: 5px;
@@ -481,6 +494,14 @@ button.ql-clean {
 
     margin: 15px;
     border-radius: 7px;
+}
+
+.fa-plus:before {
+    content: "\2b";
+    border: 2px solid var(--header-bc);
+    padding: 3px;
+    font-size: 15px;
+    border-radius: 5px;
 }
 
 .add-question-section {

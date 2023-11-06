@@ -17,9 +17,35 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-
+debugger;
+//firebase.initializeApp(firebaseConfig);
+//database = firebase.database();
 // Get a reference to the Firebase Storage
 const storage = getStorage(app);
+
+function getDataFromFirebase(databaseRefPath, array) {
+    debugger;
+    const database = firebase.database();
+    const dbRef = database.ref(databaseRefPath);
+
+    dbRef
+        .once("value")
+        .then(function (snapshot) {
+            const data = snapshot.val();
+            if (data) {
+                array.length = 0; // Clear the existing data in the array
+                for (const key in data) {
+                    array.push(data[key]);
+                }
+                console.log("Data retrieved and stored in the array:", array);
+            } else {
+                console.log("No data found in the Firebase database.");
+            }
+        })
+        .catch(function (error) {
+            console.error("Error retrieving data:", error);
+        });
+}
 
 export function uploadImage() {
     const input = document.createElement("input");
@@ -53,6 +79,22 @@ export function uploadImage() {
     };
 
     input.click();
+}
+
+//var test = [];
+//getDataFB("test.json");
+async function getDataFB(fileName) {
+    try {
+        debugger;
+        const storageRef = ref(storage, fileName);
+        const url = await getDownloadURL(storageRef);
+        const response = await fetch(url, { mode: "no-cors" }); // fetch('http://catfacts-api.appspot.com/api/facts?number=99', { mode: 'no-cors'})
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error getting data:", error);
+        return null;
+    }
 }
 /*
 // Function to save data as JSON in Firebase Storage
@@ -580,8 +622,66 @@ function setCardEventListner() {
     });
     */
 
+    qs("input.add-video").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            debugger;
+            var input = event.target;
+            var id = getVideoID(input.value.trim());
+            if (!card.videos) {
+                card.videos = [];
+            }
+            card.videos.push(id);
+            addVideo(id);
+
+            saveData();
+
+            input.value = "";
+        }
+    });
+
     setQuestionEventListners();
     textareaAutoHeightSetting();
+}
+
+function loadCardVideos() {
+    if (card.videos) {
+        qs(".card-body .video-list").innerHTML = "";
+        card.videos.forEach((id) => {
+            addVideo(id);
+        });
+    } else {
+        card.videos = [];
+        saveData();
+    }
+    updateVideoCount();
+}
+
+function updateVideoCount() {
+    qs(".card-body .videos.tab").textContent = "Videos " + card.videos.length;
+}
+
+function addVideo(id) {
+    var div = createElement("div");
+    div.className = "video-container";
+    var iframe = `<iframe width="100%" height="400px" src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+    div.innerHTML = iframe;
+    qs(".card-body .video-list").append(div);
+    updateVideoCount();
+}
+
+function getVideoID(youtubeLink) {
+    // Define a regular expression pattern to match YouTube URLs
+    const pattern = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+
+    // Use the RegExp exec method to extract the video ID from the link
+    const match = youtubeLink.match(pattern);
+
+    // If a match is found, return the video ID; otherwise, return null
+    if (match && match[1]) {
+        return match[1];
+    } else {
+        return null;
+    }
 }
 
 function addQuestionInCards(que) {
@@ -666,8 +766,8 @@ function setQuestionEventListners() {
                     qs(".card.main .question-section").classList.remove("hide");
                 } else if (event.target.classList.contains("images")) {
                     qs(".card.main .image-section").classList.remove("hide");
-                } else if (event.target.classList.contains("links")) {
-                    qs(".card.main .link-section").classList.remove("hide");
+                } else if (event.target.classList.contains("videos")) {
+                    qs(".card.main .video-section").classList.remove("hide");
                 }
             }
         });
@@ -1159,6 +1259,7 @@ function createCard(heading_text) {
         images: [],
         questions: [],
         links: [],
+        videos: [],
         create_date: getTodayDate(),
         update_date: getTodayDate(),
     };
@@ -1205,6 +1306,7 @@ function openCard(cc) {
     loadCardTags();
     loadCardImages();
     loadCardQuestions();
+    loadCardVideos();
 
     quill.root.innerHTML = card.content;
     hide("button.ql-clean");
