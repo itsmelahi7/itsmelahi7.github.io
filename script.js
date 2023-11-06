@@ -291,7 +291,7 @@ function homeEventListners() {
         var que = createQuestion();
 
         que.text = ta.value.trim();
-        if (que.text.indexOf("(a)")) {
+        if (que.text.indexOf("(a)") != -1) {
             que.type = "mcq";
             que.answer = qs(".quick-question select").value;
         }
@@ -302,7 +302,7 @@ function homeEventListners() {
             }
         });
         saveData();
-
+        updateTags();
         ta.value = "";
         qs(".quick-question .mcq-option ").classList.add("hide");
         qs(".quick-question .is-mcq ").classList.remove("hide");
